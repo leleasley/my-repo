@@ -1,7 +1,7 @@
 {
-  "name": "tbmedia",
+  "name": "lelibrary",
   "version": "1.5.0",
-  "description": "Stremio addon para catálogo do TorBox com metadados TMDB em Português BR",
+  "description": "LeLibrary — TorBox Stremio addon with TMDB metadata",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

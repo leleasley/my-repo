@@ -1,4 +1,4 @@
-# TB Media — TorBox Stremio Addon
+# LeLibrary — TorBox Stremio Addon
 
 A Stremio addon that displays your personal **TorBox** catalog (torrents and usenet) with metadata from TMDB.
 
@@ -39,9 +39,9 @@ Fork → [render.com](https://render.com) → New Web Service → connect repo. 
 
 ```yaml
 services:
-  tbmedia:
+  lelibrary:
     build: .
-    container_name: tbmedia
+    container_name: lelibrary
     restart: unless-stopped
     ports:
       - "7860:7860"

@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: tbmedia
+    name: lelibrary
     env: node
     buildCommand: npm install
     startCommand: npm start

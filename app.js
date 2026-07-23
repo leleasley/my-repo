@@ -126,7 +126,7 @@ function getBaseManifest(baseUrl) {
   return {
     id: 'community.torbox.catalog',
     version: '1.5.0',
-    name: 'TB Media',
+    name: 'LeLibrary',
     description: 'Your personal TorBox catalog with TMDB metadata.',
     logo: getLogoUrl(baseUrl),
     resources: ['catalog', 'meta', 'stream'],
@@ -152,7 +152,7 @@ function getConfiguredManifest(baseUrl, config = {}) {
     catalogs.push(
       { id: 'torbox-movies', type: 'movie',  name: '🎬 My Movies', extra: [{ name: 'skip' }, { name: 'search' }] },
       { id: 'torbox-series', type: 'series', name: '📺 My Series',  extra: [{ name: 'skip' }, { name: 'search' }] },
-      { id: 'torbox-anime',  type: 'series', name: '🍥 TB Media Anime',  extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'torbox-anime',  type: 'series', name: '🍥 LeLibrary Anime',  extra: [{ name: 'skip' }, { name: 'search' }] },
     );
   } else {
     // separate
@@ -169,7 +169,7 @@ function getConfiguredManifest(baseUrl, config = {}) {
   return {
     id: 'community.torbox.catalog',
     version: '1.5.0',
-    name: 'TB Media',
+    name: 'LeLibrary',
     description: 'Your personal TorBox catalog with TMDB metadata.',
     logo: getLogoUrl(baseUrl),
     resources: [

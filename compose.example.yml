@@ -1,7 +1,7 @@
 services:
-  tbmedia:
+  lelibrary:
     build: .
-    container_name: tbmedia
+    container_name: lelibrary
     restart: unless-stopped
     ports:
       - "7860:7860"
@@ -18,7 +18,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: tbmedia-redis
+    container_name: lelibrary-redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
