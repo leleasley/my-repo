@@ -64,7 +64,7 @@ Addon para o Stremio que exibe seu catálogo pessoal do **TorBox** (torrents e u
 # compose.yml
 services:
   tbmedia:
-    image: ghcr.io/vinip1250-art/tbmedia:latest
+    build: .
     container_name: tbmedia
     restart: unless-stopped
     ports:
@@ -72,15 +72,15 @@ services:
     environment:
       - PORT=7860
       # TTL do cache em segundos (padrão: catálogo=3600, streams=21600)
-      #- CACHE_TTL_CATALOG=3600
-      #- CACHE_TTL_STREAM=21600
+      #\- CACHE\_TTL\_CATALOG=3600
+      #\- CACHE\_TTL\_STREAM=21600
       # Redis via URL
-      #- REDIS_URL=rediss://default:senha@host.upstash.io:6379
+      #\- REDIS\_URL=rediss://default:senha@host.upstash.io:6379
       # Redis local por partes
-      #- REDIS_HOST=redis
-      #- REDIS_PORT=6379
-      #- REDIS_PASSWORD=
-      #- REDIS_TLS=false
+      #\- REDIS\_HOST=redis
+      #\- REDIS\_PORT=6379
+      #\- REDIS\_PASSWORD=
+      #\- REDIS\_TLS=false
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:7860/"]
       interval: 30s
@@ -247,7 +247,7 @@ Fork → [render.com](https://render.com) → New Web Service → connect repo. 
 ```yaml
 services:
   tbmedia:
-    image: ghcr.io/vinip1250-art/tbmedia:latest
+    build: .
     container_name: tbmedia
     restart: unless-stopped
     ports:
