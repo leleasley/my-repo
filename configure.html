@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,22 +29,22 @@
       border-radius: 1.25rem; padding: 2.5rem; width: 100%; max-width: 480px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.5);
     }
-    
-    .lang-toggle { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: .5rem; }
-    .lang-toggle button { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); border-radius: .5rem; padding: .35rem .5rem; cursor: pointer; font-size: .75rem; font-weight: 600; transition: all .2s; }
-    .lang-toggle button:hover { background: rgba(255,255,255,0.1); }
-    .lang-toggle button.active { background: rgba(124,58,237,0.15); border-color: var(--accent); color: var(--accent); }
-
-    .logo-wrap { display: flex; align-items: center; gap: .85rem; margin-bottom: .4rem; }
+    .top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .4rem; }
+    .logo-wrap { display: flex; align-items: center; gap: .85rem; }
     .logo-wrap img { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border); }
     .logo-wrap h1 {
       font-size: 1.4rem; font-weight: 700;
       background: linear-gradient(135deg,#a78bfa,#818cf8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .subtitle { color: var(--muted); font-size: .85rem; margin-bottom: 1.75rem; line-height: 1.5; padding-right: 4rem; }
+    .reset-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted);
+      border-radius: .5rem; padding: .35rem .6rem; cursor: pointer; font-size: .72rem; font-weight: 600;
+      transition: all .2s; flex-shrink: 0;
+    }
+    .reset-btn:hover { background: rgba(239,68,68,0.1); border-color: var(--error); color: var(--error); }
+    .subtitle { color: var(--muted); font-size: .85rem; margin-bottom: 1.75rem; line-height: 1.5; }
     .divider { height: 1px; background: var(--border); margin: 1.25rem 0 1.5rem; }
-
     .field { margin-bottom: 1.2rem; }
     label {
       display: flex; align-items: center; gap: .4rem;
@@ -58,7 +58,7 @@
       font-size: .92rem; outline: none; transition: border-color .2s, box-shadow .2s;
       -webkit-appearance: none;
     }
-    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
+    input:focus-visible, select:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
     input.invalid { border-color: var(--error) !important; box-shadow: 0 0 0 3px rgba(239,68,68,.2) !important; }
     select option { background: #1e1e2a; }
     .field-hint { font-size: .75rem; color: var(--muted); margin-top: .35rem; }
@@ -71,8 +71,6 @@
       background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.1rem; padding: .2rem;
     }
     .toggle-btn:hover { color: var(--text); }
-
-    /* Destaques (TorBox vs RD) */
     .field-torbox {
       background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent);
       border: 1px solid rgba(124,58,237,0.3);
@@ -80,24 +78,20 @@
     }
     .field-torbox label { color: #a78bfa; }
     .field-torbox input { border-color: rgba(124,58,237,0.4); box-shadow: 0 0 15px rgba(124,58,237,0.1); }
-    .field-torbox input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
-
+    .field-torbox input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
     .field-rd {
       opacity: 0.7; transition: opacity .2s;
       padding: 0.85rem 1rem; border-radius: 1rem; border: 1px dashed var(--border); background: rgba(0,0,0,0.15);
     }
     .field-rd:focus-within, .field-rd:hover { opacity: 1; border-style: solid; }
     .field-rd input { background: rgba(0,0,0,0.3); }
-
-    /* Steps */
     .steps { display: flex; flex-direction: column; gap: .75rem; margin-top: 1.5rem; }
-
-    /* Big install button - PURPLE */
     .btn-big {
       display: flex; align-items: center; gap: .75rem; padding: .9rem 1rem;
       border-radius: .75rem; text-decoration: none; font-weight: 700; font-size: .95rem;
       cursor: pointer; border: none; width: 100%; transition: all .2s;
     }
+    .btn-big:disabled { opacity: .6; cursor: not-allowed; transform: none !important; }
     .btn-big .icon {
       width: 40px; height: 40px; border-radius: 9px;
       display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;
@@ -105,22 +99,17 @@
     .btn-big .label { flex: 1; text-align: left; }
     .btn-big .label small { display: block; font-size: .72rem; font-weight: 400; opacity: .7; margin-top: 1px; }
     .btn-big .arr { opacity: .6; font-size: 1.1rem; }
-
     .btn-generate { background: var(--accent); color: #fff; }
-    .btn-generate:hover { background: var(--accent-h); box-shadow: 0 4px 20px var(--glow); transform: translateY(-1px); }
+    .btn-generate:hover:not(:disabled) { background: var(--accent-h); box-shadow: 0 4px 20px var(--glow); transform: translateY(-1px); }
     .btn-generate .icon { background: rgba(255,255,255,.15); }
-
     .btn-desktop { background: linear-gradient(135deg,#7c3aed,#5b21b6); color: #fff; display: none; }
     .btn-desktop.show { display: flex; }
     .btn-desktop:hover { background: linear-gradient(135deg,#6d28d9,#4c1d95); box-shadow: 0 4px 20px var(--glow); transform: translateY(-1px); }
     .btn-desktop .icon { background: rgba(255,255,255,.15); }
-
     .btn-web { background: rgba(255,255,255,.04); color: var(--text); border: 1px solid var(--border); display: none; }
     .btn-web.show { display: flex; }
     .btn-web:hover { background: rgba(255,255,255,.08); border-color: #818cf8; transform: translateY(-1px); }
     .btn-web .icon { background: rgba(124,58,237,.2); }
-
-    /* URL manual */
     .url-row {
       display: none; background: rgba(0,0,0,.3); border: 1px solid var(--border);
       border-radius: .6rem; padding: .6rem .75rem; align-items: center; gap: .5rem;
@@ -133,13 +122,11 @@
     .btn-copy {
       background: none; border: 1px solid var(--border); border-radius: .35rem;
       color: var(--muted); cursor: pointer; padding: .35rem .55rem; font-size: .8rem;
-      transition: all .2s; white-space: nowrap; flex-shrink: 0;
+      transition: all .2s; white-space: nowrap; flex-shrink: 0; min-width: 4.2rem;
     }
     .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
-
-    .security-note { font-size: .72rem; color: var(--muted); text-align: center; line-height: 1.5; }
-
-    /* Toast */
+    .btn-copy.copied { border-color: var(--success); color: var(--success); }
+    .security-note { font-size: .72rem; color: var(--muted); text-align: center; line-height: 1.5; display: none; }
     .toast {
       position: fixed; bottom: 1.5rem; right: 1.5rem;
       background: var(--card); border: 1px solid var(--success); border-radius: .6rem;
@@ -149,8 +136,6 @@
     }
     .toast.show { opacity: 1; transform: translateY(0); }
     .footer { text-align: center; margin-top: 1.5rem; font-size: .76rem; color: var(--muted); }
-
-    /* ── Stream Preview ───────────────────────────────────────────────── */
     .preview-section { margin-top: 1.5rem; }
     .preview-toggle {
       width: 100%; background: none; border: 1px solid var(--border); border-radius: .6rem; padding: .6rem .9rem;
@@ -160,13 +145,11 @@
     .preview-toggle:hover { border-color: var(--accent); color: var(--text); }
     .preview-toggle .arr { transition: transform .25s; }
     .preview-toggle.open .arr { transform: rotate(90deg); }
-
     .preview-body {
       display: none; margin-top: .75rem; background: #0a0a10;
       border: 1px solid var(--border); border-radius: .75rem; overflow: hidden;
     }
     .preview-body.open { display: block; }
-
     .preview-header {
       padding: .55rem .9rem; background: rgba(124,58,237,.08);
       border-bottom: 1px solid var(--border); font-size: .72rem; color: var(--muted); letter-spacing: .04em;
@@ -176,7 +159,6 @@
     .stream-name { min-width: 110px; max-width: 110px; font-size: .72rem; line-height: 1.55; white-space: pre-line; color: var(--text); font-weight: 600; }
     .stream-desc { flex: 1; font-size: .68rem; line-height: 1.6; white-space: pre-line; color: var(--muted); }
     .preview-note { padding: .5rem .9rem; font-size: .68rem; color: var(--muted); border-top: 1px solid var(--border); text-align: center; background: rgba(0,0,0,.2); }
-
     .referral-box {
       background: linear-gradient(135deg, rgba(124,58,237,.15), rgba(88,28,135,.2));
       border: 2px solid var(--accent);
@@ -190,254 +172,162 @@
     .referral-code-row  { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; background: rgba(0,0,0,.4); padding: .5rem .75rem; border-radius: .5rem; }
     .referral-label { font-size: .8rem; color: var(--muted); flex-shrink: 0; font-weight: 600; }
     .referral-code  { font-family: 'Menlo','Consolas',monospace; font-size: .8rem; color: #c4b5fd; flex: 1; min-width: 0; word-break: break-all; }
-    .btn-copy-ref { background: var(--accent); border: none; border-radius: .35rem; color: #fff; cursor: pointer; padding: .35rem .6rem; font-size: .8rem; font-weight: 600; transition: all .2s; white-space: nowrap; flex-shrink: 0; }
+    .btn-copy-ref { background: var(--accent); border: none; border-radius: .35rem; color: #fff; cursor: pointer; padding: .35rem .6rem; font-size: .8rem; font-weight: 600; transition: all .2s; white-space: nowrap; flex-shrink: 0; min-width: 4.2rem; }
     .btn-copy-ref:hover { background: var(--accent-h); transform: translateY(-1px); }
-
+    .btn-copy-ref.copied { background: var(--success); }
     .self-host-box { text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
     .self-host-box p { font-size: .85rem; color: var(--muted); margin-bottom: .75rem; }
     .self-host-box p a { color: #a78bfa; text-decoration: none; font-weight: 600; }
     .self-host-box p a:hover { text-decoration: underline; }
     .gh-link { display: inline-flex; align-items: center; gap: .5rem; background: #1e1e24; border: 1px solid #333; color: #fff; padding: .5rem 1rem; border-radius: .5rem; font-size: .8rem; font-weight: 600; text-decoration: none; transition: all .2s; }
     .gh-link:hover { background: #2a2a32; border-color: #555; }
+    @media (max-width: 400px) {
+      .card { padding: 1.5rem; }
+    }
   </style>
 </head>
 <body>
 <div class="card">
-  <div class="lang-toggle">
-    <button id="btnPt" onclick="setLang('pt')" class="active">🇧🇷 PT</button>
-    <button id="btnEn" onclick="setLang('en')">🇺🇸 EN</button>
+  <div class="top-row">
+    <div class="logo-wrap">
+      <img src="/tb-files-tmdb-icon.svg" alt="TorBox" onerror="this.style.display='none'" />
+      <h1>TB Media</h1>
+    </div>
+    <button class="reset-btn" type="button" onclick="resetForm()">↺ Reset</button>
   </div>
-
-  <div class="logo-wrap">
-    <img src="/tb-files-tmdb-icon.svg" alt="TorBox" onerror="this.style.display='none'" />
-    <h1>TB Media</h1>
-  </div>
-  <p class="subtitle" id="i18n-subtitle">Configure suas chaves de API para exibir o catálogo do TorBox no Stremio.</p>
+  <p class="subtitle">Configure your API keys to display the TorBox catalog in Stremio.</p>
 
   <div class="referral-box">
-    <div class="referral-title" id="i18n-refTitle">💜 Ainda não tem TorBox?</div>
-    <p class="referral-desc" id="i18n-refDesc">Assine com o link de referência abaixo, aproveite a melhor velocidade e ajude o projeto:</p>
+    <div class="referral-title">💜 Don't have TorBox yet?</div>
+    <p class="referral-desc">Subscribe with the referral link below, enjoy the best speed and help support this project:</p>
     <a class="referral-link" href="https://torbox.app/subscription?referral=b08bcd10-8df2-44c9-a0ba-4d5bdb62ef96" target="_blank" rel="noopener">
       torbox.app/subscription →
     </a>
     <div class="referral-code-row">
-      <span class="referral-label" id="i18n-refCode">Código:</span>
+      <span class="referral-label">Code:</span>
       <span class="referral-code" id="refCode">b08bcd10-8df2-44c9-a0ba-4d5bdb62ef96</span>
-      <button class="btn-copy-ref" onclick="copyRef()" id="i18n-copyBtn">Copiar</button>
+      <button class="btn-copy-ref" onclick="copyRef(this)">Copy</button>
     </div>
   </div>
 
   <div class="divider"></div>
 
   <div class="field field-torbox">
-    <label><span id="i18n-torboxLabel">TorBox API Key</span> <span class="req">*</span></label>
+    <label for="torboxApiKey">TorBox API Key <span class="req">*</span></label>
     <div class="input-wrap">
       <input type="password" id="torboxApiKey" placeholder="tb-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <button class="toggle-btn" type="button" onclick="toggleVis('torboxApiKey',this)">👁</button>
+      <button class="toggle-btn" type="button" onclick="toggleVis('torboxApiKey',this)" aria-label="Show/hide key">👁</button>
     </div>
   </div>
 
   <div class="field">
-    <label><span id="i18n-tmdbLabel">TMDB API Key</span> <span class="req">*</span></label>
+    <label for="tmdbApiKey">TMDB API Key <span class="req">*</span></label>
     <div class="input-wrap">
       <input type="password" id="tmdbApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <button class="toggle-btn" type="button" onclick="toggleVis('tmdbApiKey',this)">👁</button>
+      <button class="toggle-btn" type="button" onclick="toggleVis('tmdbApiKey',this)" aria-label="Show/hide key">👁</button>
     </div>
-    <p class="field-hint" id="i18n-tmdbHint">Obtenha em <a href="https://www.themoviedb.org/settings/api" target="_blank">themoviedb.org/settings/api</a> → copie a <strong style="color:var(--text)">API Key (v3)</strong> <em>ou</em> o <strong style="color:var(--text)">Read Access Token (v4)</strong></p>
+    <p class="field-hint">Get it at <a href="https://www.themoviedb.org/settings/api" target="_blank">themoviedb.org/settings/api</a> → copy the <strong style="color:var(--text)">API Key (v3)</strong> <em>or</em> the <strong style="color:var(--text)">Read Access Token (v4)</strong></p>
   </div>
 
   <div class="field">
-    <label id="i18n-langLabel">Idioma dos metadados</label>
+    <label for="lang">Metadata Language</label>
     <select id="lang">
+      <option value="en-US" selected>🇺🇸 English</option>
       <option value="pt-BR">🇧🇷 Português (Brasil)</option>
       <option value="pt-PT">🇵🇹 Português (Portugal)</option>
-      <option value="en-US">🇺🇸 English</option>
       <option value="es-ES">🇪🇸 Español</option>
       <option value="fr-FR">🇫🇷 Français</option>
       <option value="de-DE">🇩🇪 Deutsch</option>
       <option value="it-IT">🇮🇹 Italiano</option>
       <option value="ja-JP">🇯🇵 日本語</option>
     </select>
-    <p class="field-hint" id="i18n-langHint">Títulos, descrições e pôsteres serão buscados neste idioma</p>
+    <p class="field-hint">Titles, descriptions and posters will be fetched in this language</p>
   </div>
 
   <div class="field field-rd">
-    <label><span id="i18n-rdLabel">Real-Debrid API Key (opcional / complemento)</span></label>
+    <label for="rdApiKey">Real-Debrid API Key (optional / complement)</label>
     <div class="input-wrap">
       <input type="password" id="rdApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" oninput="toggleRdCatalog()" />
-      <button class="toggle-btn" type="button" onclick="toggleVis('rdApiKey',this)">👁</button>
+      <button class="toggle-btn" type="button" onclick="toggleVis('rdApiKey',this)" aria-label="Show/hide key">👁</button>
     </div>
   </div>
 
   <div class="field" id="rdCatalogField" style="display:none">
-    <label id="i18n-rdCatalogLabel">Catálogo Real-Debrid</label>
+    <label for="rdCatalog">Real-Debrid Catalog</label>
     <select id="rdCatalog">
-      <option value="merge" id="i18n-rdMerge">🔀 Mesclar com TorBox</option>
-      <option value="separate" id="i18n-rdSep">📂 Catálogos separados</option>
+      <option value="merge">🔀 Merge with TorBox</option>
+      <option value="separate">📂 Separate catalogs</option>
     </select>
   </div>
 
   <div class="field">
-    <label id="i18n-sortLabel">Ordenar por</label>
+    <label for="sortBy">Sort by</label>
     <select id="sortBy">
-      <option value="data_adicao" id="i18n-sortAdd">📅 Data de adição (padrão)</option>
-      <option value="data_lancamento" id="i18n-sortRel">🎬 Data de lançamento</option>
-      <option value="titulo" id="i18n-sortTitle">🔤 Título (A–Z)</option>
+      <option value="data_adicao">📅 Date added (default)</option>
+      <option value="data_lancamento">🎬 Release date</option>
+      <option value="titulo">🔤 Title (A–Z)</option>
     </select>
   </div>
 
   <div class="steps">
-    <!-- Step 1: generate -->
-    <button class="btn-big btn-generate" onclick="generate()">
+    <button class="btn-big btn-generate" id="btnGenerate" onclick="generate()">
       <div class="icon">⚡</div>
       <div class="label">
-        <span id="i18n-genBtnTitle">Gerar links de instalação</span>
-        <small id="i18n-genBtnDesc">Clique para criar os links com suas chaves</small>
+        <span id="genBtnTitle">Generate install links</span>
+        <small>Click to create the links with your keys</small>
       </div>
       <span class="arr">›</span>
     </button>
 
-    <!-- Step 2: install desktop (shown after generate) -->
     <a class="btn-big btn-desktop" id="btnDesktop" href="#">
       <div class="icon">▶</div>
       <div class="label">
-        <span id="i18n-deskBtnTitle">Instalar no Stremio (Desktop / Mobile)</span>
-        <small id="i18n-deskBtnDesc">Abre o app e instala o addon automaticamente</small>
+        <span>Install on Stremio (Desktop / Mobile)</span>
+        <small>Opens the app and installs the addon automatically</small>
       </div>
       <span class="arr">›</span>
     </a>
 
-    <!-- Step 3: install web (shown after generate) -->
     <a class="btn-big btn-web" id="btnWeb" href="#" target="_blank" rel="noopener">
       <div class="icon">🌐</div>
       <div class="label">
-        <span id="i18n-webBtnTitle">Instalar via Stremio Web</span>
-        <small id="i18n-webBtnDesc">Para usar em web.stremio.com no navegador</small>
+        <span>Install via Stremio Web</span>
+        <small>To use at web.stremio.com in the browser</small>
       </div>
       <span class="arr">›</span>
     </a>
 
-    <!-- Manual URL -->
     <div class="url-row" id="urlRow">
       <span id="manifestUrl"></span>
-      <button class="btn-copy" onclick="copyUrl()" id="i18n-copyUrlBtn">Copiar</button>
+      <button class="btn-copy" onclick="copyUrl(this)">Copy</button>
     </div>
 
-    <p class="security-note" id="secNote" style="display:none">
-      <span id="i18n-secNote">🔒 Suas chaves ficam codificadas na URL e não são armazenadas no servidor.</span>
-    </p>
+    <p class="security-note" id="secNote">🔒 Your keys are encoded in the URL and are not stored on the server.</p>
   </div>
 
-  <!-- ── Preview dos Streams ─────────────────────────────────────────── -->
   <div class="preview-section">
     <button class="preview-toggle" id="previewToggle" onclick="togglePreview()">
-      <span id="i18n-previewToggle">🎬 Preview dos Streams</span>
+      <span>🎬 Streams Preview</span>
       <span class="arr">›</span>
     </button>
     <div class="preview-body" id="previewBody">
-      <div class="preview-header" id="i18n-previewHead">Exemplo de como os streams aparecem no Stremio</div>
+      <div class="preview-header">Example of how streams appear in Stremio</div>
       <div id="previewCards"></div>
-      <div class="preview-note" id="i18n-previewNote">Os streams reais dependem dos arquivos na sua conta TorBox / Real-Debrid</div>
+      <div class="preview-note">Actual streams depend on the files in your TorBox / Real-Debrid account</div>
     </div>
   </div>
 
   <div class="self-host-box">
-    <p><span id="i18n-selfHostText">🚀 Quer o máximo de velocidade e privacidade? Considere </span><a href="https://github.com/vinip1250-art/tbmedia" target="_blank" rel="noopener"><span id="i18n-selfHostLink">auto-hospedar este addon</span></a></p>
-    <a href="https://github.com/vinip1250-art/tbmedia" target="_blank" rel="noopener" class="gh-link"><span id="i18n-githubRepo">⭐ Dê uma estrela no GitHub</span></a>
+    <p>🚀 Want maximum speed and privacy? Consider <a href="https://github.com/vinip1250-art/tbmedia" target="_blank" rel="noopener">self-hosting this addon</a></p>
+    <a href="https://github.com/vinip1250-art/tbmedia" target="_blank" rel="noopener" class="gh-link">⭐ Star us on GitHub</a>
   </div>
 
   <div class="divider"></div>
-
   <div class="footer">TorBox Catalog • Stremio + TorBox + TMDB</div>
 </div>
-
-<div class="toast" id="toast">✓ URL copiada!</div>
+<div class="toast" id="toast">✓ Copied!</div>
 
 <script>
-  const translations = {
-    pt: {
-      subtitle: "Configure suas chaves de API para exibir o catálogo do TorBox no Stremio.",
-      torboxLabel: "TorBox API Key",
-      tmdbLabel: "TMDB API Key",
-      langLabel: "Idioma dos metadados",
-      langHint: "Títulos, descrições e pôsteres serão buscados neste idioma",
-      rdLabel: "Real-Debrid API Key (opcional / complemento)",
-      rdCatalogLabel: "Catálogo Real-Debrid",
-      sortLabel: "Ordenar por",
-      sortAdd: "📅 Data de adição (padrão)",
-      sortRel: "🎬 Data de lançamento",
-      sortTitle: "🔤 Título (A–Z)",
-      rdMerge: "🔀 Mesclar com TorBox",
-      rdSep: "📂 Catálogos separados",
-      genBtnTitle: "Gerar links de instalação",
-      genBtnDesc: "Clique para criar os links com suas chaves",
-      deskBtnTitle: "Instalar no Stremio (Desktop / Mobile)",
-      deskBtnDesc: "Abre o app e instala o addon automaticamente",
-      webBtnTitle: "Instalar via Stremio Web",
-      webBtnDesc: "Para usar em web.stremio.com no navegador",
-      secNote: "🔒 Suas chaves ficam codificadas na URL e não são armazenadas no servidor.",
-      previewToggle: "🎬 Preview dos Streams",
-      previewHead: "Exemplo de como os streams aparecem no Stremio",
-      previewNote: "Os streams reais dependem dos arquivos na sua conta TorBox / Real-Debrid",
-      selfHostText: "🚀 Quer o máximo de velocidade e privacidade? Considere ",
-      selfHostLink: "auto-hospedar este addon",
-      githubRepo: "⭐ Dê uma estrela no GitHub",
-      refTitle: "💜 Ainda não tem TorBox?",
-      refDesc: "Assine com o link de referência abaixo, aproveite a melhor velocidade e ajude o projeto:",
-      refCode: "Código:",
-      copyBtn: "Copiar",
-      copyUrlBtn: "Copiar",
-      tmdbHint: "Obtenha em <a href=\"https://www.themoviedb.org/settings/api\" target=\"_blank\">themoviedb.org/settings/api</a> → copie a <strong style=\"color:var(--text)\">API Key (v3)</strong> <em>ou</em> o <strong style=\"color:var(--text)\">Read Access Token (v4)</strong>"
-    },
-    en: {
-      subtitle: "Configure your API keys to display the TorBox catalog in Stremio.",
-      torboxLabel: "TorBox API Key",
-      tmdbLabel: "TMDB API Key",
-      langLabel: "Metadata Language",
-      langHint: "Titles, descriptions and posters will be fetched in this language",
-      rdLabel: "Real-Debrid API Key (optional / complement)",
-      rdCatalogLabel: "Real-Debrid Catalog",
-      sortLabel: "Sort by",
-      sortAdd: "📅 Date added (default)",
-      sortRel: "🎬 Release date",
-      sortTitle: "🔤 Title (A–Z)",
-      rdMerge: "🔀 Merge with TorBox",
-      rdSep: "📂 Separate catalogs",
-      genBtnTitle: "Generate install links",
-      genBtnDesc: "Click to create the links with your keys",
-      deskBtnTitle: "Install on Stremio (Desktop / Mobile)",
-      deskBtnDesc: "Opens the app and installs the addon automatically",
-      webBtnTitle: "Install via Stremio Web",
-      webBtnDesc: "To use at web.stremio.com in the browser",
-      secNote: "🔒 Your keys are encoded in the URL and are not stored on the server.",
-      previewToggle: "🎬 Streams Preview",
-      previewHead: "Example of how streams appear in Stremio",
-      previewNote: "Actual streams depend on the files in your TorBox / Real-Debrid account",
-      selfHostText: "🚀 Want maximum speed and privacy? Consider ",
-      selfHostLink: "self-hosting this addon",
-      githubRepo: "⭐ Star us on GitHub",
-      refTitle: "💜 Don't have TorBox yet?",
-      refDesc: "Subscribe with the referral link below, enjoy the best speed and help the project:",
-      refCode: "Code:",
-      copyBtn: "Copy",
-      copyUrlBtn: "Copy",
-      tmdbHint: "Get it at <a href=\"https://www.themoviedb.org/settings/api\" target=\"_blank\">themoviedb.org/settings/api</a> → copy the <strong style=\"color:var(--text)\">API Key (v3)</strong> <em>or</em> the <strong style=\"color:var(--text)\">Read Access Token (v4)</strong>"
-    }
-  };
-
-  function setLang(lang) {
-    document.getElementById('btnPt').classList.toggle('active', lang === 'pt');
-    document.getElementById('btnEn').classList.toggle('active', lang === 'en');
-    
-    for (const [key, text] of Object.entries(translations[lang])) {
-      const el = document.getElementById(`i18n-${key}`);
-      if (el) {
-        if (key === 'tmdbHint') el.innerHTML = text;
-        else el.textContent = text;
-      }
-    }
-  }
-
   function toggleVis(id, btn) {
     const el = document.getElementById(id);
     const isPass = el.type === 'password';
@@ -455,6 +345,13 @@
     document.getElementById('rdCatalogField').style.display = hasRd ? 'block' : 'none';
   }
 
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
   function generate() {
     const torboxApiKey = document.getElementById('torboxApiKey').value.trim();
     const tmdbApiKey   = document.getElementById('tmdbApiKey').value.trim();
@@ -469,7 +366,15 @@
       if (!val) { el.classList.add('invalid'); valid = false; }
       else el.classList.remove('invalid');
     });
-    if (!valid) return;
+    if (!valid) {
+      showToast('⚠ Fill in the required fields');
+      return;
+    }
+
+    const btn = document.getElementById('btnGenerate');
+    const originalLabel = document.getElementById('genBtnTitle').textContent;
+    btn.disabled = true;
+    document.getElementById('genBtnTitle').textContent = 'Generating…';
 
     const cfg = { torboxApiKey, tmdbApiKey, sortBy, lang };
     if (rdApiKey) { cfg.rdApiKey = rdApiKey; cfg.rdCatalog = rdCatalog; }
@@ -477,33 +382,60 @@
     const encoded     = encodeConfig(cfg);
     const origin      = window.location.origin;
     const manifestUrl = `${origin}/${encoded}/manifest.json`;
-
-    // stremio:// = manifest URL trocando https:// por stremio://
     const stremioDeep = manifestUrl.replace(/^https?:\/\//, 'stremio://');
-
-    // Stremio Web
     const stremioWeb  = `https://web.stremio.com/#?addon=${encodeURIComponent(manifestUrl)}`;
 
-    document.getElementById('manifestUrl').textContent = manifestUrl;
-    document.getElementById('btnDesktop').href = stremioDeep;
-    document.getElementById('btnWeb').href = stremioWeb;
-
-    document.getElementById('btnDesktop').classList.add('show');
-    document.getElementById('btnWeb').classList.add('show');
-    document.getElementById('urlRow').classList.add('show');
-    document.getElementById('secNote').style.display = 'block';
-
-    // Scroll para os botões
-    document.getElementById('btnDesktop').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    setTimeout(() => {
+      document.getElementById('manifestUrl').textContent = manifestUrl;
+      document.getElementById('btnDesktop').href = stremioDeep;
+      document.getElementById('btnWeb').href = stremioWeb;
+      document.getElementById('btnDesktop').classList.add('show');
+      document.getElementById('btnWeb').classList.add('show');
+      document.getElementById('urlRow').classList.add('show');
+      document.getElementById('secNote').style.display = 'block';
+      btn.disabled = false;
+      document.getElementById('genBtnTitle').textContent = originalLabel;
+      document.getElementById('btnDesktop').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 250);
   }
 
-  function copyUrl() {
+  function copyUrl(btn) {
     const url = document.getElementById('manifestUrl').textContent;
     navigator.clipboard.writeText(url).then(() => {
-      const t = document.getElementById('toast');
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
+      showToast('✓ URL copied!');
+      flashCopied(btn);
     });
+  }
+
+  function copyRef(btn) {
+    const code = document.getElementById('refCode').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      showToast('✓ Code copied!');
+      flashCopied(btn);
+    });
+  }
+
+  function flashCopied(btn) {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+  }
+
+  function resetForm() {
+    ['torboxApiKey', 'tmdbApiKey', 'rdApiKey'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = '';
+      el.classList.remove('invalid');
+    });
+    document.getElementById('lang').value = 'en-US';
+    document.getElementById('sortBy').value = 'data_adicao';
+    document.getElementById('rdCatalogField').style.display = 'none';
+    document.getElementById('btnDesktop').classList.remove('show');
+    document.getElementById('btnWeb').classList.remove('show');
+    document.getElementById('urlRow').classList.remove('show');
+    document.getElementById('secNote').style.display = 'none';
+    document.getElementById('manifestUrl').textContent = '';
   }
 
   document.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
@@ -549,9 +481,9 @@
   }
   function pvAudio(n) {
     const u = n.toUpperCase(), p = [];
-    if      (u.match(/\bDUAL\b|\bDUBLADO\b/))      p.push('Dublado');
+    if      (u.match(/\bDUAL\b|\bDUBLADO\b/))      p.push('Dubbed');
     else if (u.match(/\bNACIONAL\b|\bPT.?BR\b/))    p.push('PT-BR');
-    else if (u.match(/\bLEGENDADO\b/))              p.push('Leg.');
+    else if (u.match(/\bLEGENDADO\b/))              p.push('Subbed');
     else if (u.match(/\bENG(LISH)?\b/))             p.push('EN');
     if (u.match(/\bTRUEHD\b/))                       p.push('TrueHD');
     if (u.match(/\bATMOS\b/))                        p.push('Atmos');
@@ -608,18 +540,9 @@
   }
 
   const SAMPLES = [
-    {
-      filename: 'Sonic.the.Hedgehog.3.2024.1080p.WEB-DL.H265.Dual.Audio.PT-BR.DD5.1-BIOMA.mkv',
-      size: 9126805504, source: 'torbox',
-    },
-    {
-      filename: 'Duna.Parte.Dois.2024.2160p.BluRay.HEVC.HDR10Plus.TrueHD.Atmos-GROUP.mkv',
-      size: 45097156608, source: 'torbox',
-    },
-    {
-      filename: 'Game.of.Thrones.S01E01.720p.WEBRip.x264-FoV.mkv',
-      size: 1258291200, source: 'realdebrid',
-    },
+    { filename: 'Sonic.the.Hedgehog.3.2024.1080p.WEB-DL.H265.Dual.Audio.PT-BR.DD5.1-BIOMA.mkv', size: 9126805504, source: 'torbox' },
+    { filename: 'Dune.Part.Two.2024.2160p.BluRay.HEVC.HDR10Plus.TrueHD.Atmos-GROUP.mkv', size: 45097156608, source: 'torbox' },
+    { filename: 'Game.of.Thrones.S01E01.720p.WEBRip.x264-FoV.mkv', size: 1258291200, source: 'realdebrid' },
   ];
 
   function renderPreview() {
@@ -640,20 +563,6 @@
     const isOpen = body.classList.toggle('open');
     btn.classList.toggle('open', isOpen);
     if (isOpen) renderPreview();
-  }
-
-  function copyRef() {
-    const code = document.getElementById('refCode').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      const t = document.getElementById('toast');
-      const isEn = document.getElementById('btnEn').classList.contains('active');
-      t.textContent = isEn ? '✓ Code copied!' : '✓ Código copiado!';
-      t.classList.add('show');
-      setTimeout(() => { 
-        t.classList.remove('show'); 
-        t.textContent = isEn ? '✓ URL copied!' : '✓ URL copiada!'; 
-      }, 2200);
-    });
   }
 </script>
 </body>
