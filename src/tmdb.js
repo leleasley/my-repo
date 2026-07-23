@@ -131,7 +131,8 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   if (type === 'movie') {
     const links = [];
     if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
-    if (productionCompanies.length > 0) links.push({ name: 'Production', category: 'production', url: `https://www.themoviedb.org/movie/${tmdbId}` });
+    for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/movie/${tmdbId}` });
+    for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/movie/${tmdbId}` });
 
     const result = {
       id: `torbox:movie:${tmdbId}`, tmdbId, imdbId,
@@ -160,8 +161,8 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
 
     const links = [];
     if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
-    if (networks.length > 0) links.push({ name: 'Network', category: 'network', url: `https://www.themoviedb.org/tv/${tmdbId}` });
-    if (productionCompanies.length > 0) links.push({ name: 'Production', category: 'production', url: `https://www.themoviedb.org/tv/${tmdbId}` });
+    for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/tv/${tmdbId}` });
+    for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/tv/${tmdbId}` });
 
     const result = {
       id: `torbox:series:${tmdbId}`, tmdbId, imdbId,
