@@ -108,7 +108,10 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   if (!detail) return null;
 
   const imdbId    = external?.imdb_id || null;
-  const cast      = (credits?.cast || []).slice(0, 8).map(c => c.name);
+  const cast      = (credits?.cast || []).slice(0, 8).map(c => ({
+    name: c.name,
+    image: c.profile_path ? `${TMDB_IMAGE}/w185${c.profile_path}` : undefined,
+  }));
   const directors = type === 'movie'
     ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => c.name)
     : (detail.created_by || []).map(c => c.name);
