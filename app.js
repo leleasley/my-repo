@@ -119,7 +119,7 @@ if (!IS_SERVERLESS) {
 }
 
 function getLogoUrl(baseUrl) {
-  return `${baseUrl}/tb-files-tmdb-icon.svg`;
+  return `${baseUrl}/LeLibrary.png`;
 }
 
 function getBaseManifest(baseUrl) {
