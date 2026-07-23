@@ -1,0 +1,39 @@
+services:
+  tbmedia:
+    image: ghcr.io/vinip1250-art/tbmedia:latest
+    container_name: tbmedia
+    restart: unless-stopped
+    networks:
+      - npm-net
+    env_file:
+      - ./.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:7860/health"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: tbmedia-redis
+    restart: unless-stopped
+    networks:
+      - npm-net
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  redis_data:
+
+networks:
+  npm-net:
+    external: true

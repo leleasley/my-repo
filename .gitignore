@@ -1,0 +1,34 @@
+# Credenciais e configurações sensíveis
+.env
+*.pem
+*.key
+*.crt
+
+# Compose local (contém configurações específicas do servidor)
+# Use compose.example.yml como base
+compose.yml
+
+# Dependências
+node_modules/
+package-lock.json
+
+# Cache persistido em disco
+/tmp/torbox-tmdb-cache.json
+
+# Logs
+*.log
+logs/
+
+# Redis data
+redis_data/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
