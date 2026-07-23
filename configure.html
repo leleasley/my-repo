@@ -438,6 +438,21 @@
     document.getElementById('manifestUrl').textContent = '';
   }
 
+  document.addEventListener('DOMContentLoaded', () => {
+    const cfg = window.__INITIAL_CONFIG__;
+    if (cfg) {
+      if (cfg.torboxApiKey) document.getElementById('torboxApiKey').value = cfg.torboxApiKey;
+      if (cfg.tmdbApiKey) document.getElementById('tmdbApiKey').value = cfg.tmdbApiKey;
+      if (cfg.rdApiKey) {
+        document.getElementById('rdApiKey').value = cfg.rdApiKey;
+        toggleRdCatalog();
+      }
+      if (cfg.rdCatalog) document.getElementById('rdCatalog').value = cfg.rdCatalog;
+      if (cfg.sortBy) document.getElementById('sortBy').value = cfg.sortBy;
+      if (cfg.lang) document.getElementById('lang').value = cfg.lang;
+    }
+  });
+
   document.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
 
   // ── Stream Preview ────────────────────────────────────────────────────

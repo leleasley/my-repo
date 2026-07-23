@@ -191,6 +191,19 @@ function getConfiguredManifest(baseUrl, config = {}) {
 app.get('/', (req, res) => res.redirect('/manifest.json'));
 app.get('/configure', (req, res) => res.sendFile(path.join(ROOT_DIR, 'configure.html')));
 
+app.get('/:token/configure', (req, res) => {
+  const config = decodeConfig(req.params.token);
+  if (!config) return res.status(400).send('Invalid token');
+
+  const html = require('fs').readFileSync(path.join(ROOT_DIR, 'configure.html'), 'utf8');
+  const injected = html.replace(
+    '</head>',
+    `<script>window.__INITIAL_CONFIG__ = ${JSON.stringify(config)}</script></head>`
+  );
+  res.setHeader('Cache-Control', 'no-cache');
+  res.send(injected);
+});
+
 app.get('/health', async (req, res) => {
   const stats = await cache.getStats();
   res.json({
