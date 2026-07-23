@@ -33,7 +33,7 @@ Addon para o Stremio que exibe seu catálogo pessoal do **TorBox** (torrents e u
 
 #### Opção 1 — Vercel (recomendado, grátis)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vinip1250-art/tbmedia)
+[![Deploy with Vercel](https://camo.githubusercontent.com/7015516519ae874ab75537283bc75f86b3d46386ed994093a3790a1180913164/68747470733a2f2f76657263656c2e636f6d2f627574746f6e)](https://vercel.com/new/clone?repository-url=https://github.com/leleasley/my-repo)
 
 1. Faça um fork/clone deste repositório no GitHub
 2. Acesse [vercel.com](https://vercel.com) e importe o repositório
@@ -234,7 +234,7 @@ A Stremio addon that displays your personal **TorBox** catalog (torrents and use
 
 #### Option 1 — Vercel (recommended, free)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vinip1250-art/tbmedia)
+[![Deploy with Vercel](https://camo.githubusercontent.com/7015516519ae874ab75537283bc75f86b3d46386ed994093a3790a1180913164/68747470733a2f2f76657263656c2e636f6d2f627574746f6e)](https://vercel.com/new/clone?repository-url=https://github.com/leleasley/my-repo)
 
 Set `REDIS_URL` optionally for persistent cache. **Addon URL:** `https://your-project.vercel.app`
 
