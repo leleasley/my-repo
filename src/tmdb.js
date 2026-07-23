@@ -112,6 +112,10 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   const directors = type === 'movie'
     ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => c.name)
     : (detail.created_by || []).map(c => c.name);
+  const writers   = (credits?.crew || []).filter(c => c.job === 'Writer').map(c => c.name);
+
+  const networks = (detail.networks || []).map(n => n.name);
+  const productionCompanies = (detail.production_companies || []).map(c => c.name);
 
   let poster     = detail.poster_path   ? `${TMDB_IMAGE}/w500${detail.poster_path}`    : null;
   let background = detail.backdrop_path ? `${TMDB_IMAGE}/w1280${detail.backdrop_path}` : null;
@@ -125,6 +129,10 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
                || vids.find(v => v.type === 'Trailer' && v.site === 'YouTube');
 
   if (type === 'movie') {
+    const links = [];
+    if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
+    if (productionCompanies.length > 0) links.push({ name: 'Production', category: 'production', url: `https://www.themoviedb.org/movie/${tmdbId}` });
+
     const result = {
       id: `torbox:movie:${tmdbId}`, tmdbId, imdbId,
       type: 'movie',
@@ -133,12 +141,12 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       poster, background,
       description: detail.overview,
       runtime: detail.runtime ? `${detail.runtime} min` : undefined,
-      genres, cast, director: directors,
+      genres, cast, director: directors, writer: writers,
       trailerStreams: trailer ? [{ title: 'Trailer', ytId: trailer.key }] : [],
       releaseInfo: detail.release_date?.split('-')[0],
       released: detail.release_date ? new Date(detail.release_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
-      links: imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [],
+      links,
     };
     tmdbCache.set(cacheKey, result);
     return result;
@@ -150,6 +158,11 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     }
     const videos = episodeLists.flat();
 
+    const links = [];
+    if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
+    if (networks.length > 0) links.push({ name: 'Network', category: 'network', url: `https://www.themoviedb.org/tv/${tmdbId}` });
+    if (productionCompanies.length > 0) links.push({ name: 'Production', category: 'production', url: `https://www.themoviedb.org/tv/${tmdbId}` });
+
     const result = {
       id: `torbox:series:${tmdbId}`, tmdbId, imdbId,
       type: 'series',
@@ -157,13 +170,13 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       year: detail.first_air_date?.split('-')[0],
       poster, background,
       description: detail.overview,
-      genres, cast, director: directors,
+      genres, cast, director: directors, writer: writers,
       trailerStreams: trailer ? [{ title: 'Trailer', ytId: trailer.key }] : [],
       releaseInfo: detail.first_air_date?.split('-')[0],
       released: detail.first_air_date ? new Date(detail.first_air_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
       videos,
-      links: imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [],
+      links,
       status: detail.status,
     };
     tmdbCache.set(cacheKey, result);
