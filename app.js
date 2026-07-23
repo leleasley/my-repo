@@ -125,7 +125,7 @@ function getBaseManifest(baseUrl) {
     id: 'community.torbox.catalog',
     version: '1.5.0',
     name: 'TB Media',
-    description: 'Seu catálogo pessoal do TorBox com metadados do TMDB.',
+    description: 'Your personal TorBox catalog with TMDB metadata.',
     logo: getLogoUrl(baseUrl),
     resources: ['catalog', 'meta', 'stream'],
     types: ['movie', 'series', 'anime'],
@@ -168,7 +168,7 @@ function getConfiguredManifest(baseUrl, config = {}) {
     id: 'community.torbox.catalog',
     version: '1.5.0',
     name: 'TB Media',
-    description: 'Seu catálogo pessoal do TorBox com metadados do TMDB.',
+    description: 'Your personal TorBox catalog with TMDB metadata.',
     logo: getLogoUrl(baseUrl),
     resources: [
       'catalog',
