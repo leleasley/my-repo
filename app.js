@@ -148,15 +148,15 @@ function getConfiguredManifest(baseUrl, config = {}) {
 
   if (!hasRD || rdCatalog === 'merge') {
     catalogs.push(
-      { id: 'torbox-movies', type: 'movie',  name: '🎬 TB Media Filmes', extra: [{ name: 'skip' }, { name: 'search' }] },
-      { id: 'torbox-series', type: 'series', name: '📺 TB Media Séries',  extra: [{ name: 'skip' }, { name: 'search' }] },
-      { id: 'torbox-anime',  type: 'series', name: '🍥 TB Media Animes',  extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'torbox-movies', type: 'movie',  name: '🎬 My Movies', extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'torbox-series', type: 'series', name: '📺 My Series',  extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'torbox-anime',  type: 'series', name: '🍥 TB Media Anime',  extra: [{ name: 'skip' }, { name: 'search' }] },
     );
   } else {
     // separate
     catalogs.push(
-      { id: 'torbox-movies', type: 'movie',  name: '🎬 TorBox Filmes', extra: [{ name: 'skip' }, { name: 'search' }] },
-      { id: 'torbox-series', type: 'series', name: '📺 TorBox Séries',  extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'torbox-movies', type: 'movie',  name: '🎬 TorBox Films', extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'torbox-series', type: 'series', name: '📺 TorBox Series',  extra: [{ name: 'skip' }, { name: 'search' }] },
       { id: 'torbox-anime',  type: 'series', name: '🍥 TorBox Animes',  extra: [{ name: 'skip' }, { name: 'search' }] },
       { id: 'rd-movies',     type: 'movie',  name: '🔴 Real-Debrid Filmes', extra: [{ name: 'skip' }, { name: 'search' }] },
       { id: 'rd-series',     type: 'series', name: '🔴 Real-Debrid Séries',  extra: [{ name: 'skip' }, { name: 'search' }] },
