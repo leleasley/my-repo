@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>LeLibrary — Configure</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,11 +12,12 @@
       --text: #e8e8f0; --muted: #9090a8; --input-bg: #0f0f13;
       --success: #22c55e; --error: #ef4444;
     }
+    html { height: 100%; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg); color: var(--text);
-      min-height: 100vh; display: flex; align-items: center;
-      justify-content: center; padding: 1.5rem;
+      min-height: 100%; display: flex; align-items: center;
+      justify-content: center; padding: 1rem;
     }
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none;
@@ -26,79 +27,82 @@
     }
     .card {
       background: var(--card); border: 1px solid var(--border); position: relative;
-      border-radius: 1.25rem; padding: 2.5rem; width: 100%; max-width: 480px;
+      border-radius: 1rem; padding: 1.5rem; width: 100%; max-width: 440px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      max-height: 100vh; overflow-y: auto;
     }
-    .top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .4rem; }
-    .logo-wrap { display: flex; align-items: center; gap: .85rem; }
-    .logo-wrap img { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border); }
+    .top-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .25rem; }
+    .logo-wrap { display: flex; align-items: center; gap: .6rem; }
+    .logo-wrap img { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); }
     .logo-wrap h1 {
-      font-size: 1.4rem; font-weight: 700;
+      font-size: 1.15rem; font-weight: 700;
       background: linear-gradient(135deg,#a78bfa,#818cf8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .reset-btn {
       background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted);
-      border-radius: .5rem; padding: .35rem .6rem; cursor: pointer; font-size: .72rem; font-weight: 600;
+      border-radius: .4rem; padding: .25rem .5rem; cursor: pointer; font-size: .7rem; font-weight: 600;
       transition: all .2s; flex-shrink: 0;
     }
     .reset-btn:hover { background: rgba(239,68,68,0.1); border-color: var(--error); color: var(--error); }
-    .subtitle { color: var(--muted); font-size: .85rem; margin-bottom: 1.75rem; line-height: 1.5; }
-    .divider { height: 1px; background: var(--border); margin: 1.25rem 0 1.5rem; }
-    .field { margin-bottom: 1.2rem; }
+    .subtitle { color: var(--muted); font-size: .78rem; margin-bottom: .75rem; line-height: 1.4; }
+    .divider { height: 1px; background: var(--border); margin: .75rem 0; }
+    .field { margin-bottom: .7rem; }
     label {
-      display: flex; align-items: center; gap: .4rem;
-      font-size: .82rem; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .06em; margin-bottom: .45rem;
+      display: flex; align-items: center; gap: .3rem;
+      font-size: .72rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .04em; margin-bottom: .3rem;
     }
     label .req { color: var(--accent); }
     input[type="text"], input[type="password"], select {
       width: 100%; background: var(--input-bg); border: 1px solid var(--border);
-      border-radius: .6rem; padding: .7rem .9rem; color: var(--text);
-      font-size: .92rem; outline: none; transition: border-color .2s, box-shadow .2s;
+      border-radius: .5rem; padding: .55rem .75rem; color: var(--text);
+      font-size: .85rem; outline: none; transition: border-color .2s, box-shadow .2s;
       -webkit-appearance: none;
     }
-    input:focus-visible, select:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
-    input.invalid { border-color: var(--error) !important; box-shadow: 0 0 0 3px rgba(239,68,68,.2) !important; }
+    input:focus-visible, select:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px var(--glow); }
+    input.invalid { border-color: var(--error) !important; box-shadow: 0 0 0 2px rgba(239,68,68,.2) !important; }
     select option { background: #1e1e2a; }
-    .field-hint { font-size: .75rem; color: var(--muted); margin-top: .35rem; }
+    .field-hint { font-size: .68rem; color: var(--muted); margin-top: .2rem; line-height: 1.4; }
     .field-hint a { color: #818cf8; text-decoration: none; }
     .field-hint a:hover { text-decoration: underline; }
     .input-wrap { position: relative; }
-    .input-wrap input { padding-right: 2.8rem; }
+    .input-wrap input { padding-right: 2.5rem; }
     .toggle-btn {
-      position: absolute; right: .7rem; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.1rem; padding: .2rem;
+      position: absolute; right: .6rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem; padding: .2rem;
     }
     .toggle-btn:hover { color: var(--text); }
     .field-torbox {
       background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent);
       border: 1px solid rgba(124,58,237,0.3);
-      padding: 1.1rem 1.25rem; border-radius: 1rem;
+      padding: .7rem .85rem; border-radius: .75rem; margin-bottom: .7rem;
     }
     .field-torbox label { color: #a78bfa; }
-    .field-torbox input { border-color: rgba(124,58,237,0.4); box-shadow: 0 0 15px rgba(124,58,237,0.1); }
-    .field-torbox input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
+    .field-torbox input { border-color: rgba(124,58,237,0.4); }
+    .field-torbox input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px var(--glow); }
     .field-rd {
       opacity: 0.7; transition: opacity .2s;
-      padding: 0.85rem 1rem; border-radius: 1rem; border: 1px dashed var(--border); background: rgba(0,0,0,0.15);
+      padding: .6rem .75rem; border-radius: .75rem; border: 1px dashed var(--border); background: rgba(0,0,0,0.15);
     }
     .field-rd:focus-within, .field-rd:hover { opacity: 1; border-style: solid; }
     .field-rd input { background: rgba(0,0,0,0.3); }
-    .steps { display: flex; flex-direction: column; gap: .75rem; margin-top: 1.5rem; }
+    .field-row { display: flex; gap: .6rem; }
+    .field-row .field { flex: 1; }
+    .steps { display: flex; flex-direction: column; gap: .5rem; margin-top: .75rem; }
     .btn-big {
-      display: flex; align-items: center; gap: .75rem; padding: .9rem 1rem;
-      border-radius: .75rem; text-decoration: none; font-weight: 700; font-size: .95rem;
+      display: flex; align-items: center; gap: .6rem; padding: .65rem .8rem;
+      border-radius: .6rem; text-decoration: none; font-weight: 700; font-size: .85rem;
       cursor: pointer; border: none; width: 100%; transition: all .2s;
     }
     .btn-big:disabled { opacity: .6; cursor: not-allowed; transform: none !important; }
     .btn-big .icon {
-      width: 40px; height: 40px; border-radius: 9px;
-      display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;
+      width: 34px; height: 34px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
     }
     .btn-big .label { flex: 1; text-align: left; }
-    .btn-big .label small { display: block; font-size: .72rem; font-weight: 400; opacity: .7; margin-top: 1px; }
-    .btn-big .arr { opacity: .6; font-size: 1.1rem; }
+    .btn-big .label small { display: block; font-size: .66rem; font-weight: 400; opacity: .7; margin-top: 1px; }
+    .btn-big .arr { opacity: .6; font-size: 1rem; }
     .btn-generate { background: var(--accent); color: #fff; }
     .btn-generate:hover:not(:disabled) { background: var(--accent-h); box-shadow: 0 4px 20px var(--glow); transform: translateY(-1px); }
     .btn-generate .icon { background: rgba(255,255,255,.15); }
@@ -112,77 +116,104 @@
     .btn-web .icon { background: rgba(124,58,237,.2); }
     .url-row {
       display: none; background: rgba(0,0,0,.3); border: 1px solid var(--border);
-      border-radius: .6rem; padding: .6rem .75rem; align-items: center; gap: .5rem;
+      border-radius: .5rem; padding: .5rem .6rem; align-items: center; gap: .4rem;
     }
     .url-row.show { display: flex; }
     .url-row span {
-      flex: 1; font-family: 'Menlo','Consolas',monospace; font-size: .72rem;
+      flex: 1; font-family: 'Menlo','Consolas',monospace; font-size: .65rem;
       color: #a78bfa; word-break: break-all;
     }
     .btn-copy {
-      background: none; border: 1px solid var(--border); border-radius: .35rem;
-      color: var(--muted); cursor: pointer; padding: .35rem .55rem; font-size: .8rem;
-      transition: all .2s; white-space: nowrap; flex-shrink: 0; min-width: 4.2rem;
+      background: none; border: 1px solid var(--border); border-radius: .3rem;
+      color: var(--muted); cursor: pointer; padding: .3rem .45rem; font-size: .72rem;
+      transition: all .2s; white-space: nowrap; flex-shrink: 0; min-width: 3.5rem;
     }
     .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
     .btn-copy.copied { border-color: var(--success); color: var(--success); }
-    .security-note { font-size: .72rem; color: var(--muted); text-align: center; line-height: 1.5; display: none; }
+    .security-note { font-size: .66rem; color: var(--muted); text-align: center; line-height: 1.4; display: none; margin-top: .25rem; }
     .toast {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
-      background: var(--card); border: 1px solid var(--success); border-radius: .6rem;
-      padding: .65rem 1rem; font-size: .88rem; color: var(--success);
+      position: fixed; bottom: 1rem; right: 1rem;
+      background: var(--card); border: 1px solid var(--success); border-radius: .5rem;
+      padding: .5rem .8rem; font-size: .82rem; color: var(--success);
       opacity: 0; transform: translateY(8px); transition: all .25s;
       pointer-events: none; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,.4);
     }
     .toast.show { opacity: 1; transform: translateY(0); }
-    .footer { text-align: center; margin-top: 1.5rem; font-size: .76rem; color: var(--muted); }
-    .preview-section { margin-top: 1.5rem; }
+
+    /* ── Referral (compact) ────────────────────────────────────────── */
+    .referral-box {
+      background: linear-gradient(135deg, rgba(124,58,237,.12), rgba(88,28,135,.15));
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: .75rem; padding: .7rem .85rem; margin-bottom: .75rem;
+    }
+    .referral-row { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+    .referral-title { font-weight: 700; font-size: .82rem; color: #fff; }
+    .referral-desc { font-size: .75rem; color: var(--muted); flex: 1; line-height: 1.3; min-width: 180px; }
+    .referral-code-row {
+      display: flex; align-items: center; gap: .4rem; background: rgba(0,0,0,.35);
+      padding: .35rem .55rem; border-radius: .4rem; flex: 1; min-width: 200px;
+    }
+    .referral-label { font-size: .7rem; color: var(--muted); font-weight: 600; flex-shrink: 0; }
+    .referral-code {
+      font-family: 'Menlo','Consolas',monospace; font-size: .65rem; color: #c4b5fd;
+      flex: 1; min-width: 0; word-break: break-all;
+    }
+    .btn-copy-ref {
+      background: var(--accent); border: none; border-radius: .3rem; color: #fff;
+      cursor: pointer; padding: .25rem .45rem; font-size: .7rem; font-weight: 600;
+      transition: all .2s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-copy-ref:hover { background: var(--accent-h); transform: translateY(-1px); }
+    .btn-copy-ref.copied { background: var(--success); }
+
+    /* ── Preview (collapsible) ─────────────────────────────────────── */
     .preview-toggle {
-      width: 100%; background: none; border: 1px solid var(--border); border-radius: .6rem; padding: .6rem .9rem;
-      color: var(--muted); font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      width: 100%; background: none; border: 1px solid var(--border); border-radius: .5rem; padding: .5rem .75rem;
+      color: var(--muted); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
       cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: border-color .2s, color .2s;
     }
     .preview-toggle:hover { border-color: var(--accent); color: var(--text); }
     .preview-toggle .arr { transition: transform .25s; }
     .preview-toggle.open .arr { transform: rotate(90deg); }
     .preview-body {
-      display: none; margin-top: .75rem; background: #0a0a10;
-      border: 1px solid var(--border); border-radius: .75rem; overflow: hidden;
+      display: none; margin-top: .5rem; background: #0a0a10;
+      border: 1px solid var(--border); border-radius: .6rem; overflow: hidden;
     }
     .preview-body.open { display: block; }
     .preview-header {
-      padding: .55rem .9rem; background: rgba(124,58,237,.08);
-      border-bottom: 1px solid var(--border); font-size: .72rem; color: var(--muted); letter-spacing: .04em;
+      padding: .4rem .7rem; background: rgba(124,58,237,.08);
+      border-bottom: 1px solid var(--border); font-size: .65rem; color: var(--muted);
     }
-    .stream-card { display: flex; gap: .75rem; padding: .75rem .9rem; border-bottom: 1px solid rgba(255,255,255,.04); }
+    .stream-card { display: flex; gap: .6rem; padding: .5rem .7rem; border-bottom: 1px solid rgba(255,255,255,.04); }
     .stream-card:last-child { border-bottom: none; }
-    .stream-name { min-width: 110px; max-width: 110px; font-size: .72rem; line-height: 1.55; white-space: pre-line; color: var(--text); font-weight: 600; }
-    .stream-desc { flex: 1; font-size: .68rem; line-height: 1.6; white-space: pre-line; color: var(--muted); }
-    .preview-note { padding: .5rem .9rem; font-size: .68rem; color: var(--muted); border-top: 1px solid var(--border); text-align: center; background: rgba(0,0,0,.2); }
-    .referral-box {
-      background: linear-gradient(135deg, rgba(124,58,237,.15), rgba(88,28,135,.2));
-      border: 2px solid var(--accent);
-      border-radius: 1rem; padding: 1.25rem 1.5rem; margin-top: .5rem; margin-bottom: 1.5rem;
-      box-shadow: 0 0 20px var(--glow);
-    }
-    .referral-title { font-weight: 800; font-size: 1.05rem; margin-bottom: .4rem; color: #fff; text-shadow: 0 0 10px var(--glow); }
-    .referral-desc  { font-size: .85rem; color: #e8e8f0; margin-bottom: .75rem; line-height: 1.4; }
-    .referral-link  { display: inline-block; font-size: .9rem; color: #a78bfa; text-decoration: none; font-weight: 700; margin-bottom: .75rem; }
-    .referral-link:hover { text-decoration: underline; color: #c4b5fd; }
-    .referral-code-row  { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; background: rgba(0,0,0,.4); padding: .5rem .75rem; border-radius: .5rem; }
-    .referral-label { font-size: .8rem; color: var(--muted); flex-shrink: 0; font-weight: 600; }
-    .referral-code  { font-family: 'Menlo','Consolas',monospace; font-size: .8rem; color: #c4b5fd; flex: 1; min-width: 0; word-break: break-all; }
-    .btn-copy-ref { background: var(--accent); border: none; border-radius: .35rem; color: #fff; cursor: pointer; padding: .35rem .6rem; font-size: .8rem; font-weight: 600; transition: all .2s; white-space: nowrap; flex-shrink: 0; min-width: 4.2rem; }
-    .btn-copy-ref:hover { background: var(--accent-h); transform: translateY(-1px); }
-    .btn-copy-ref.copied { background: var(--success); }
-    .self-host-box { text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
-    .self-host-box p { font-size: .85rem; color: var(--muted); margin-bottom: .75rem; }
+    .stream-name { min-width: 90px; max-width: 90px; font-size: .65rem; line-height: 1.45; white-space: pre-line; color: var(--text); font-weight: 600; }
+    .stream-desc { flex: 1; font-size: .6rem; line-height: 1.5; white-space: pre-line; color: var(--muted); }
+    .preview-note { padding: .35rem .7rem; font-size: .6rem; color: var(--muted); border-top: 1px solid var(--border); text-align: center; background: rgba(0,0,0,.2); }
+
+    /* ── Self-host (compact) ──────────────────────────────────────── */
+    .self-host-box { text-align: center; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--border); }
+    .self-host-box p { font-size: .75rem; color: var(--muted); margin-bottom: .5rem; }
     .self-host-box p a { color: #a78bfa; text-decoration: none; font-weight: 600; }
     .self-host-box p a:hover { text-decoration: underline; }
-    .gh-link { display: inline-flex; align-items: center; gap: .5rem; background: #1e1e24; border: 1px solid #333; color: #fff; padding: .5rem 1rem; border-radius: .5rem; font-size: .8rem; font-weight: 600; text-decoration: none; transition: all .2s; }
+    .gh-link {
+      display: inline-flex; align-items: center; gap: .4rem; background: #1e1e24; border: 1px solid #333;
+      color: #fff; padding: .4rem .8rem; border-radius: .4rem; font-size: .72rem; font-weight: 600;
+      text-decoration: none; transition: all .2s;
+    }
     .gh-link:hover { background: #2a2a32; border-color: #555; }
-    @media (max-width: 400px) {
-      .card { padding: 1.5rem; }
+    .footer { text-align: center; margin-top: .6rem; font-size: .68rem; color: var(--muted); }
+
+    /* ── Mobile ────────────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      body { padding: .5rem; }
+      .card { padding: 1rem; border-radius: .85rem; }
+      .field-row { flex-direction: column; gap: 0; }
+    }
+    @media (min-height: 700px) {
+      body { align-items: center; }
+    }
+    @media (max-height: 600px) {
+      .card { max-height: none; }
     }
   </style>
 </head>
@@ -190,7 +221,7 @@
 <div class="card">
   <div class="top-row">
     <div class="logo-wrap">
-      <img src="/tb-files-tmdb-icon.svg" alt="TorBox" onerror="this.style.display='none'" />
+      <img src="/tb-files-tmdb-icon.svg" alt="LeLibrary" onerror="this.style.display='none'" />
       <h1>LeLibrary</h1>
     </div>
     <button class="reset-btn" type="button" onclick="resetForm()">↺ Reset</button>
@@ -198,19 +229,16 @@
   <p class="subtitle">Configure your API keys to display the TorBox catalog in Stremio.</p>
 
   <div class="referral-box">
-    <div class="referral-title">💜 Don't have TorBox yet?</div>
-    <p class="referral-desc">Subscribe with the referral link below, enjoy the best speed and help support this project:</p>
-    <a class="referral-link" href="https://torbox.app/subscription?referral=fba69dd3-9611-4e43-a505-87190b4db7fb" target="_blank" rel="noopener">
-      torbox.app/subscription →
-    </a>
+    <div class="referral-row">
+      <span class="referral-title">💜 Don't have TorBox?</span>
+      <span class="referral-desc">Subscribe below for the best speed and support the project:</span>
+    </div>
     <div class="referral-code-row">
       <span class="referral-label">Code:</span>
       <span class="referral-code" id="refCode">fba69dd3-9611-4e43-a505-87190b4db7fb</span>
       <button class="btn-copy-ref" onclick="copyRef(this)">Copy</button>
     </div>
   </div>
-
-  <div class="divider"></div>
 
   <div class="field field-torbox">
     <label for="torboxApiKey">TorBox API Key <span class="req">*</span></label>
@@ -226,26 +254,35 @@
       <input type="password" id="tmdbApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
       <button class="toggle-btn" type="button" onclick="toggleVis('tmdbApiKey',this)" aria-label="Show/hide key">👁</button>
     </div>
-    <p class="field-hint">Get it at <a href="https://www.themoviedb.org/settings/api" target="_blank">themoviedb.org/settings/api</a> → copy the <strong style="color:var(--text)">API Key (v3)</strong> <em>or</em> the <strong style="color:var(--text)">Read Access Token (v4)</strong></p>
+    <p class="field-hint">Get it at <a href="https://www.themoviedb.org/settings/api" target="_blank">themoviedb.org/settings/api</a> → copy <strong style="color:var(--text)">API Key (v3)</strong></p>
   </div>
 
-  <div class="field">
-    <label for="lang">Metadata Language</label>
-    <select id="lang">
-      <option value="en-US" selected>🇺🇸 English</option>
-      <option value="pt-BR">🇧🇷 Português (Brasil)</option>
-      <option value="pt-PT">🇵🇹 Português (Portugal)</option>
-      <option value="es-ES">🇪🇸 Español</option>
-      <option value="fr-FR">🇫🇷 Français</option>
-      <option value="de-DE">🇩🇪 Deutsch</option>
-      <option value="it-IT">🇮🇹 Italiano</option>
-      <option value="ja-JP">🇯🇵 日本語</option>
-    </select>
-    <p class="field-hint">Titles, descriptions and posters will be fetched in this language</p>
+  <div class="field-row">
+    <div class="field">
+      <label for="lang">Language</label>
+      <select id="lang">
+        <option value="en-US" selected>🇺🇸 English</option>
+        <option value="pt-BR">🇧🇷 PT-BR</option>
+        <option value="pt-PT">🇵🇹 PT-PT</option>
+        <option value="es-ES">🇪🇸 Español</option>
+        <option value="fr-FR">🇫🇷 Français</option>
+        <option value="de-DE">🇩🇪 Deutsch</option>
+        <option value="it-IT">🇮🇹 Italiano</option>
+        <option value="ja-JP">🇯🇵 日本語</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="sortBy">Sort by</label>
+      <select id="sortBy">
+        <option value="data_adicao">📅 Date added</option>
+        <option value="data_lancamento">🎬 Release date</option>
+        <option value="titulo">🔤 Title (A–Z)</option>
+      </select>
+    </div>
   </div>
 
   <div class="field field-rd">
-    <label for="rdApiKey">Real-Debrid API Key (optional / complement)</label>
+    <label for="rdApiKey">Real-Debrid Key <span style="color:var(--muted);text-transform:none;font-size:.68rem;letter-spacing:0">(optional)</span></label>
     <div class="input-wrap">
       <input type="password" id="rdApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" oninput="toggleRdCatalog()" />
       <button class="toggle-btn" type="button" onclick="toggleVis('rdApiKey',this)" aria-label="Show/hide key">👁</button>
@@ -257,15 +294,6 @@
     <select id="rdCatalog">
       <option value="merge">🔀 Merge with TorBox</option>
       <option value="separate">📂 Separate catalogs</option>
-    </select>
-  </div>
-
-  <div class="field">
-    <label for="sortBy">Sort by</label>
-    <select id="sortBy">
-      <option value="data_adicao">📅 Date added (default)</option>
-      <option value="data_lancamento">🎬 Release date</option>
-      <option value="titulo">🔤 Title (A–Z)</option>
     </select>
   </div>
 
@@ -283,7 +311,7 @@
       <div class="icon">▶</div>
       <div class="label">
         <span>Install on Stremio (Desktop / Mobile)</span>
-        <small>Opens the app and installs the addon automatically</small>
+        <small>Opens the app and installs the addon</small>
       </div>
       <span class="arr">›</span>
     </a>
@@ -292,7 +320,7 @@
       <div class="icon">🌐</div>
       <div class="label">
         <span>Install via Stremio Web</span>
-        <small>To use at web.stremio.com in the browser</small>
+        <small>Use at web.stremio.com in the browser</small>
       </div>
       <span class="arr">›</span>
     </a>
@@ -305,7 +333,7 @@
     <p class="security-note" id="secNote">🔒 Your keys are encoded in the URL and are not stored on the server.</p>
   </div>
 
-  <div class="preview-section">
+  <div style="margin-top:.75rem">
     <button class="preview-toggle" id="previewToggle" onclick="togglePreview()">
       <span>🎬 Streams Preview</span>
       <span class="arr">›</span>
@@ -322,7 +350,6 @@
     <a href="https://github.com/leleasley/my-repo" target="_blank" rel="noopener" class="gh-link">⭐ Star us on GitHub</a>
   </div>
 
-  <div class="divider"></div>
   <div class="footer">LeLibrary • Stremio + TorBox + TMDB</div>
 </div>
 <div class="toast" id="toast">✓ Copied!</div>
