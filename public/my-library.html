@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeLibrary — My Library</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f13; --card: #18181f; --border: #2a2a35;
+      --accent: #7c3aed; --accent-h: #6d28d9; --glow: rgba(124,58,237,0.35);
+      --text: #e8e8f0; --muted: #9090a8; --input-bg: #0f0f13;
+      --success: #22c55e; --error: #ef4444; --warning: #f59e0b;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; padding: 1.5rem;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,58,237,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 60%);
+    }
+    .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+
+    /* Header */
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .logo-wrap { display: flex; align-items: center; gap: .6rem; }
+    .logo-wrap img { width: 36px; height: 36px; border-radius: 8px; }
+    .logo-wrap h1 {
+      font-size: 1.3rem; font-weight: 700;
+      background: linear-gradient(135deg,#a78bfa,#818cf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header-links { display: flex; gap: .75rem; }
+    .header-links a {
+      color: var(--muted); text-decoration: none; font-size: .82rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .header-links a:hover { color: var(--accent); }
+
+    /* Login Section */
+    .login-section {
+      background: var(--card); border: 1px solid var(--border); border-radius: 1rem;
+      padding: 2rem; max-width: 480px; margin: 0 auto 2rem;
+    }
+    .login-section h2 { font-size: 1.1rem; margin-bottom: .25rem; }
+    .login-section p { color: var(--muted); font-size: .82rem; margin-bottom: 1rem; }
+    .input-wrap { position: relative; margin-bottom: 1rem; }
+    .input-wrap input {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+      border-radius: .5rem; padding: .7rem .9rem; padding-right: 2.8rem;
+      color: var(--text); font-size: .9rem; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .input-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--glow); }
+    .toggle-btn {
+      position: absolute; right: .7rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.1rem;
+    }
+    .toggle-btn:hover { color: var(--text); }
+    .btn-load {
+      width: 100%; background: var(--accent); color: #fff; border: none;
+      border-radius: .5rem; padding: .7rem; font-size: .9rem; font-weight: 700;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-load:hover { background: var(--accent-h); }
+    .btn-load:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-load.loading { pointer-events: none; }
+    .btn-load.loading::after {
+      content: ' ⏳'; animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+    .hint { font-size: .72rem; color: var(--muted); margin-top: .5rem; }
+    .hint a { color: #818cf8; text-decoration: none; }
+
+    /* Error Display */
+    .error-box {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      border-radius: .75rem; padding: .8rem 1rem; margin-bottom: 1rem;
+      display: none; font-size: .85rem; color: #fca5a5;
+    }
+    .error-box.show { display: flex; align-items: flex-start; gap: .5rem; }
+    .error-box .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .error-box .msg { flex: 1; }
+    .error-box .retry { color: var(--accent); cursor: pointer; font-weight: 600; background: none; border: none; font-size: .85rem; }
+    .error-box .retry:hover { text-decoration: underline; }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--card); border: 1px solid var(--border); border-radius: .75rem;
+      padding: .6rem 1rem; font-size: .82rem;
+    }
+    .stat .num { font-weight: 700; color: var(--accent); font-size: 1rem; }
+    .stat .label { color: var(--muted); }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border);
+      padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .5rem 1rem; border-radius: .5rem; border: none;
+      background: transparent; color: var(--muted); font-size: .85rem; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { background: var(--accent); color: #fff; }
+
+    /* Grid */
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .item {
+      background: var(--card); border: 1px solid var(--border); border-radius: .75rem;
+      overflow: hidden; transition: transform .2s, box-shadow .2s; cursor: default;
+    }
+    .item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+    .item-poster {
+      width: 100%; aspect-ratio: 2/3; object-fit: cover;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+    .item-info { padding: .7rem; }
+    .item-title {
+      font-size: .82rem; font-weight: 600; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; margin-bottom: .25rem;
+    }
+    .item-meta { font-size: .72rem; color: var(--muted); }
+    .item-state {
+      display: inline-block; padding: .15rem .4rem; border-radius: .25rem;
+      font-size: .65rem; font-weight: 600; margin-top: .3rem;
+    }
+    .state-cached { background: rgba(34,197,94,0.15); color: var(--success); }
+    .state-completed { background: rgba(34,197,94,0.15); color: var(--success); }
+    .state-seeding { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .state-downloading { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .state-checking { background: rgba(144,144,168,0.15); color: var(--muted); }
+    .state-error { background: rgba(239,68,68,0.15); color: var(--error); }
+
+    /* Empty State */
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+    .empty .icon { font-size: 2.5rem; margin-bottom: .5rem; }
+    .empty h3 { font-size: 1rem; margin-bottom: .25rem; color: var(--text); }
+    .empty p { font-size: .85rem; }
+
+    /* Loading */
+    .loading-screen { text-align: center; padding: 3rem; color: var(--muted); }
+    .loading-screen .spinner {
+      width: 32px; height: 32px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 0 auto .75rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--card); border: 1px solid var(--success); border-radius: .5rem;
+      padding: .5rem .8rem; font-size: .82rem; color: var(--success);
+      opacity: 0; transform: translateY(8px); transition: all .25s;
+      pointer-events: none; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      body { padding: .75rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .75rem; }
+      .stats-bar { gap: .5rem; }
+      .stat { padding: .4rem .75rem; }
+      .header { flex-direction: column; gap: .5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="/LeLibrary.png" alt="LeLibrary" onerror="this.style.display='none'" />
+      <h1>LeLibrary</h1>
+    </div>
+    <div class="header-links">
+      <a href="/">← Addon</a>
+      <a href="/configure">Configure</a>
+    </div>
+  </div>
+
+  <!-- Login -->
+  <div class="login-section" id="loginSection">
+    <h2>My Library</h2>
+    <p>Enter your TorBox API key to browse your downloads. All requests go directly from your browser to TorBox — nothing is stored on any server.</p>
+    <div class="input-wrap">
+      <input type="password" id="apiKey" placeholder="tb-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <button class="toggle-btn" type="button" onclick="toggleVis()" aria-label="Show/hide key">👁</button>
+    </div>
+    <button class="btn-load" id="btnLoad" onclick="loadLibrary()">Load Library</button>
+    <p class="hint">Get your key at <a href="https://torbox.app/settings/api" target="_blank">torbox.app/settings/api</a></p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box" id="errorBox">
+    <span class="icon">⚠️</span>
+    <span class="msg" id="errorMsg"></span>
+    <button class="retry" onclick="loadLibrary()">Retry</button>
+  </div>
+
+  <!-- Content (hidden until loaded) -->
+  <div id="content" style="display:none">
+    <div class="stats-bar" id="statsBar"></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty" id="emptyState" style="display:none">
+    <div class="icon">📂</div>
+    <h3>No downloads found</h3>
+    <p>Add some content to your TorBox account to see it here.</p>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-screen" id="loadingScreen" style="display:none">
+    <div class="spinner"></div>
+    <p>Loading your library from TorBox...</p>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const TORBOX_API = 'https://api.torbox.app/v1/api';
+let allItems = [];
+let currentTab = 'all';
+
+function toggleVis() {
+  const el = document.getElementById('apiKey');
+  const btn = el.parentElement.querySelector('.toggle-btn');
+  const isPass = el.type === 'password';
+  el.type = isPass ? 'text' : 'password';
+  btn.textContent = isPass ? '🙈' : '👁';
+}
+
+function showError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+  document.getElementById('errorBox').classList.add('show');
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('content').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+}
+
+function hideError() {
+  document.getElementById('errorBox').classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+async function torboxGet(path, apiKey) {
+  const res = await fetch(`${TORBOX_API}${path}`, {
+    headers: { 'Authorization': `Bearer ${apiKey}` },
+  });
+  if (!res.ok) {
+    if (res.status === 401) throw new Error('Invalid API key — check your key at torbox.app/settings/api');
+    if (res.status === 403) throw new Error('Access denied — your API key may be expired or inactive');
+    if (res.status === 429) throw new Error('Rate limited by TorBox — try again in a minute');
+    if (res.status >= 500) throw new Error('TorBox server error — try again later');
+    throw new Error(`TorBox API error: ${res.status}`);
+  }
+  const data = await res.json();
+  if (data.error) throw new Error(`TorBox: ${data.error}`);
+  return data.data || [];
+}
+
+async function loadLibrary() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) {
+    showError('Please enter your TorBox API key');
+    return;
+  }
+
+  hideError();
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('content').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('loadingScreen').style.display = 'block';
+  document.getElementById('btnLoad').classList.add('loading');
+
+  try {
+    const [torrents, usenet] = await Promise.allSettled([
+      torboxGet('/torrents/mylist', apiKey),
+      torboxGet('/usenet/mylist', apiKey),
+    ]);
+
+    const torrentItems = torrents.status === 'fulfilled' ? torrents.value : [];
+    const usenetItems = usenet.status === 'fulfilled' ? usenet.value : [];
+
+    if (torrents.status === 'rejected' && usenet.status === 'rejected') {
+      throw new Error(`Failed to load library: ${torrents.reason?.message || usenet.reason?.message}`);
+    }
+
+    const items = [
+      ...torrents.value.map(i => ({ ...i, source: 'torrent' })),
+      ...usenet.value.map(i => ({ ...i, source: 'usenet' })),
+    ];
+
+    const completed = items.filter(i => {
+      const state = (i.download_state || '').toLowerCase();
+      return state === 'completed' || state === 'seeding' || state === 'cached' || state === 'finalized'
+        || i.download_finished === true || i.download_present === true;
+    });
+
+    if (completed.length === 0) {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    allItems = completed;
+    renderStats(completed);
+    renderTabs(completed);
+    renderGrid(completed);
+
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    showToast(`Loaded ${completed.length} items`);
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    document.getElementById('btnLoad').classList.remove('loading');
+  }
+}
+
+function renderStats(items) {
+  const movies = items.filter(i => !isSeries(i.name || i.filename || ''));
+  const series = items.filter(i => isSeries(i.name || i.filename || ''));
+  const totalSize = items.reduce((sum, i) => sum + (i.size || 0), 0);
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><span class="num">${items.length}</span> <span class="label">Total</span></div>
+    <div class="stat"><span class="num">${movies.length}</span> <span class="label">Movies</span></div>
+    <div class="stat"><span class="num">${series.length}</span> <span class="label">Series</span></div>
+    <div class="stat"><span class="num">${formatBytes(totalSize)}</span> <span class="label">Size</span></div>
+  `;
+}
+
+function renderTabs(items) {
+  const movies = items.filter(i => !isSeries(i.name || i.filename || ''));
+  const series = items.filter(i => isSeries(i.name || i.filename || ''));
+  document.getElementById('tabs').innerHTML = `
+    <button class="tab active" onclick="switchTab('all')">All (${items.length})</button>
+    <button class="tab" onclick="switchTab('movie')">Movies (${movies.length})</button>
+    <button class="tab" onclick="switchTab('series')">Series (${series.length})</button>
+  `;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const filtered = tab === 'all' ? allItems
+    : tab === 'movie' ? allItems.filter(i => !isSeries(i.name || i.filename || ''))
+    : allItems.filter(i => isSeries(i.name || i.filename || ''));
+
+  renderGrid(filtered);
+}
+
+function renderGrid(items) {
+  if (items.length === 0) {
+    document.getElementById('grid').innerHTML = '<div class="empty"><div class="icon">📂</div><h3>No items in this category</h3></div>';
+    return;
+  }
+
+  document.getElementById('grid').innerHTML = items.map(item => {
+    const name = item.name || item.filename || 'Unknown';
+    const state = (item.download_state || '').toLowerCase();
+    const stateClass = `state-${state}`;
+    const stateLabel = state.charAt(0).toUpperCase() + state.slice(1);
+    const size = item.size ? formatBytes(item.size) : '';
+    const source = item.source === 'usenet' ? ' Usenet' : '';
+    const ext = getExtension(name);
+
+    return `
+      <div class="item">
+        <div class="item-poster" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(135deg,#1a1a2e,#16213e)">
+          ${ext ? getExtIcon(ext) : '📄'}
+        </div>
+        <div class="item-info">
+          <div class="item-title" title="${name}">${name}</div>
+          <div class="item-meta">${size}${source ? ' · ' + source : ''}</div>
+          <span class="item-state ${stateClass}">${stateLabel}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function isSeries(name) {
+  return /\bS\d{1,2}E\d{1,2}\b/i.test(name) || /\bS\d{1,2}\b/.test(name) ||
+    /\bSeason\s+\d+\b/i.test(name) || /\bComplete\b/i.test(name);
+}
+
+function getExtension(name) {
+  const match = name.match(/\.([a-zA-Z0-9]+)$/);
+  return match ? match[1].toLowerCase() : '';
+}
+
+function getExtIcon(ext) {
+  const icons = { mkv: '🎬', mp4: '🎬', avi: '🎬', mov: '🎬', ts: '📺', wmv: '📺', m4v: '🎬', webm: '🎬' };
+  return icons[ext] || '📄';
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return '';
+  const gb = bytes / 1024 / 1024 / 1024;
+  return gb >= 1 ? `${gb.toFixed(1)} GB` : `${(bytes / 1024 / 1024).toFixed(0)} MB`;
+}
+
+// Restore API key from localStorage
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('lelibrary_torbox_key');
+  if (saved) document.getElementById('apiKey').value = saved;
+
+  document.getElementById('apiKey').addEventListener('change', (e) => {
+    localStorage.setItem('lelibrary_torbox_key', e.target.value.trim());
+  });
+});
+</script>
+</body>
+</html>
