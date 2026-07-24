@@ -108,39 +108,10 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   if (!detail) return null;
 
   const imdbId    = external?.imdb_id || null;
-  const cast      = (credits?.cast || []).slice(0, 20).map(c => c.name);
+  const cast      = (credits?.cast || []).slice(0, 8).map(c => c.name);
   const directors = type === 'movie'
     ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => c.name)
     : (detail.created_by || []).map(c => c.name);
-  const writers   = (credits?.crew || []).filter(c => c.job === 'Writer').map(c => c.name);
-
-  const networks = (detail.networks || []).map(n => n.name);
-  const productionCompanies = (detail.production_companies || []).map(c => c.name);
-
-  // Nuvio app_extras for richer metadata
-  const appExtras = {};
-  const richCast = (credits?.cast || []).slice(0, 50).map(c => ({
-    id: c.id,
-    name: c.name,
-    character: c.character || '',
-    photo: c.profile_path ? `${TMDB_IMAGE}/w185${c.profile_path}` : null,
-  }));
-  if (richCast.length > 0) appExtras.cast = richCast;
-
-  const richDirectors = type === 'movie'
-    ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => ({ id: c.id, name: c.name }))
-    : (detail.created_by || []).map(c => ({ id: c.id, name: c.name }));
-  if (richDirectors.length > 0) appExtras.directors = richDirectors;
-
-  const richWriters = (credits?.crew || []).filter(c => c.job === 'Writer').map(c => ({ id: c.id, name: c.name }));
-  if (richWriters.length > 0) appExtras.writers = richWriters;
-
-  const certification = detail.content_ratings?.results?.find(r => r.iso_3166_1 === 'US')?.rating
-    || detail.release_dates?.results?.find(r => r.iso_3166_1 === 'US')?.release_dates?.[0]?.certification
-    || undefined;
-  if (certification) appExtras.certification = certification;
-
-  if (detail.release_dates) appExtras.releaseDates = detail.release_dates;
 
   let poster     = detail.poster_path   ? `${TMDB_IMAGE}/w500${detail.poster_path}`    : null;
   let background = detail.backdrop_path ? `${TMDB_IMAGE}/w1280${detail.backdrop_path}` : null;
@@ -154,38 +125,20 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
                || vids.find(v => v.type === 'Trailer' && v.site === 'YouTube');
 
   if (type === 'movie') {
-    const links = [];
-    if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
-    for (const i of (credits?.cast || []).slice(0, 10)) links.push({ name: i.name, category: 'actor', url: `https://www.themoviedb.org/person/${i.id}` });
-    for (const d of (type === 'movie' ? (credits?.crew || []).filter(c => c.job === 'Director') : (detail.created_by || []))) links.push({ name: d.name, category: 'director', url: `https://www.themoviedb.org/person/${d.id}` });
-    for (const w of (credits?.crew || []).filter(c => c.job === 'Writer')) links.push({ name: w.name, category: 'writer', url: `https://www.themoviedb.org/person/${w.id}` });
-    for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/movie/${tmdbId}` });
-    for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/movie/${tmdbId}` });
-
-    const slug = (detail.title || detail.original_title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
     const result = {
       id: `torbox:movie:${tmdbId}`, tmdbId, imdbId,
-      imdb_id: imdbId || undefined,
-      moviedb_id: tmdbId,
       type: 'movie',
       name: detail.title || detail.original_title,
-      slug: `movie/${slug}-${tmdbId}`,
       year: detail.release_date?.split('-')[0],
       poster, background,
       description: detail.overview,
       runtime: detail.runtime ? `${detail.runtime} min` : undefined,
-      genres, genre: genres, cast, director: directors, writer: writers,
+      genres, cast, director: directors,
       trailerStreams: trailer ? [{ title: 'Trailer', ytId: trailer.key }] : [],
-      trailers: trailer ? [{ source: trailer.key, type: 'Trailer' }] : [],
       releaseInfo: detail.release_date?.split('-')[0],
       released: detail.release_date ? new Date(detail.release_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
-      country: (detail.production_countries || []).map(c => c.name).join(', ') || undefined,
-      awards: detail.tagline || undefined,
-      links,
-      app_extras: Object.keys(appExtras).length > 0 ? appExtras : undefined,
-      behaviorHints: { defaultVideoId: `torbox:movie:${tmdbId}` },
+      links: imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [],
     };
     tmdbCache.set(cacheKey, result);
     return result;
@@ -197,56 +150,25 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     }
     const videos = episodeLists.flat();
 
-    const links = [];
-    if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
-    for (const i of (credits?.cast || []).slice(0, 10)) links.push({ name: i.name, category: 'actor', url: `https://www.themoviedb.org/person/${i.id}` });
-    for (const d of (detail.created_by || [])) links.push({ name: d.name, category: 'director', url: `https://www.themoviedb.org/person/${d.id}` });
-    for (const w of (credits?.crew || []).filter(c => c.job === 'Writer')) links.push({ name: w.name, category: 'writer', url: `https://www.themoviedb.org/person/${w.id}` });
-    for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/tv/${tmdbId}` });
-    for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/tv/${tmdbId}` });
-
-    const slug = (detail.name || detail.original_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
     const result = {
       id: `torbox:series:${tmdbId}`, tmdbId, imdbId,
-      imdb_id: imdbId || undefined,
-      moviedb_id: tmdbId,
       type: 'series',
       name: detail.name || detail.original_name,
-      slug: `series/${slug}-${tmdbId}`,
       year: detail.first_air_date?.split('-')[0],
       poster, background,
       description: detail.overview,
-      genres, genre: genres, cast, director: directors, writer: writers,
+      genres, cast, director: directors,
       trailerStreams: trailer ? [{ title: 'Trailer', ytId: trailer.key }] : [],
-      trailers: trailer ? [{ source: trailer.key, type: 'Trailer' }] : [],
       releaseInfo: detail.first_air_date?.split('-')[0],
       released: detail.first_air_date ? new Date(detail.first_air_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
-      country: (detail.origin_countries || []).join(', ') || undefined,
-      links,
       videos,
+      links: imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [],
       status: detail.status,
-      app_extras: Object.keys(appExtras).length > 0 ? appExtras : undefined,
-      behaviorHints: { defaultVideoId: videos?.[0]?.id },
     };
     tmdbCache.set(cacheKey, result);
     return result;
   }
 }
 
-// TMDB ID → IMDB ID
-async function tmdbToImdb(apiKey, tmdbId, type) {
-  const auth = tmdbAuth(apiKey);
-  const endpoint = type === 'movie' ? `/movie/${tmdbId}` : `/tv/${tmdbId}`;
-  try {
-    const res = await axios.get(`${TMDB_BASE}${endpoint}/external_ids`, {
-      headers: auth.headers,
-      params: auth.params,
-      timeout: 5000,
-    });
-    return res.data?.imdb_id || null;
-  } catch { return null; }
-}
-
-module.exports = { searchMetadata, getMetadata, imdbToTmdb, tmdbToImdb };
+module.exports = { searchMetadata, getMetadata, imdbToTmdb };
