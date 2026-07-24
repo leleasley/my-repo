@@ -117,6 +117,31 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   const networks = (detail.networks || []).map(n => n.name);
   const productionCompanies = (detail.production_companies || []).map(c => c.name);
 
+  // Nuvio app_extras for richer metadata
+  const appExtras = {};
+  const richCast = (credits?.cast || []).slice(0, 20).map(c => ({
+    name: c.name,
+    character: c.character || undefined,
+    photo: c.profile_path ? `${TMDB_IMAGE}/w185${c.profile_path}` : undefined,
+    tmdbId: c.id,
+  }));
+  if (richCast.length > 0) appExtras.cast = richCast;
+
+  const richDirectors = type === 'movie'
+    ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => ({ name: c.name }))
+    : (detail.created_by || []).map(c => ({ name: c.name }));
+  if (richDirectors.length > 0) appExtras.directors = richDirectors;
+
+  const richWriters = (credits?.crew || []).filter(c => c.job === 'Writer').map(c => ({ name: c.name }));
+  if (richWriters.length > 0) appExtras.writers = richWriters;
+
+  const certification = detail.content_ratings?.results?.find(r => r.iso_3166_1 === 'US')?.rating
+    || detail.release_dates?.results?.find(r => r.iso_3166_1 === 'US')?.release_dates?.[0]?.certification
+    || undefined;
+  if (certification) appExtras.certification = certification;
+
+  if (detail.release_dates) appExtras.releaseDates = detail.release_dates;
+
   let poster     = detail.poster_path   ? `${TMDB_IMAGE}/w500${detail.poster_path}`    : null;
   let background = detail.backdrop_path ? `${TMDB_IMAGE}/w1280${detail.backdrop_path}` : null;
   const langCode = lang.split('-')[0];
@@ -156,6 +181,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       country: (detail.production_countries || []).map(c => c.name).join(', ') || undefined,
       awards: detail.tagline || undefined,
       links,
+      app_extras: Object.keys(appExtras).length > 0 ? appExtras : undefined,
       behaviorHints: { defaultVideoId: `torbox:movie:${tmdbId}` },
     };
     tmdbCache.set(cacheKey, result);
@@ -195,6 +221,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       links,
       videos,
       status: detail.status,
+      app_extras: Object.keys(appExtras).length > 0 ? appExtras : undefined,
       behaviorHints: { defaultVideoId: videos?.[0]?.id },
     };
     tmdbCache.set(cacheKey, result);
