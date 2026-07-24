@@ -204,6 +204,30 @@ app.get('/', (req, res) => res.sendFile(path.join(ROOT_DIR, 'landing.html')));
 app.get('/configure', (req, res) => res.sendFile(path.join(ROOT_DIR, 'configure.html')));
 app.get('/my-library', (req, res) => res.sendFile(path.join(ROOT_DIR, 'public', 'my-library.html')));
 
+// Lightweight TorBox API proxy for client-side library browser
+// No data stored — just forwards requests with CORS headers
+app.use('/api/torbox', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+
+  const apiKey = req.headers.authorization?.replace('Bearer ', '');
+  if (!apiKey) return res.status(401).json({ error: 'Missing API key' });
+
+  const targetPath = req.url;
+  try {
+    const axios = require('axios');
+    const torboxRes = await axios.get(`https://api.torbox.app/v1/api${targetPath}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      timeout: 15000,
+    });
+    res.json(torboxRes.data);
+  } catch (err) {
+    const status = err.response?.status || 500;
+    res.status(status).json({ error: err.response?.data?.detail || err.message });
+  }
+});
+
 app.get('/:token/configure', (req, res) => {
   const config = decodeConfig(req.params.token);
   if (!config) return res.status(400).send('Invalid token');
