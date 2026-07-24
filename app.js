@@ -350,8 +350,7 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
 
   let tmdbId;
   if (id.startsWith('torbox:')) {
-    const parts = id.split(':');
-    tmdbId = parts[2];
+    tmdbId = id.split(':')[2];
   } else if (id.startsWith('tt')) {
     const { imdbToTmdb } = require('./src/tmdb');
     const mapped = await imdbToTmdb(tmdbApiKey, id.split(':')[0]);

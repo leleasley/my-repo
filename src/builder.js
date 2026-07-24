@@ -1,7 +1,7 @@
 const fs   = require('fs');
 const { getTorBoxDownloads, getTorBoxStreamLink, getTorBoxFiles, isVideoFile } = require('./torbox');
 const { getRealDebridDownloads, getRealDebridFiles, getRealDebridStreamLink } = require('./realdebrid');
-const { searchMetadata, getMetadata } = require('./tmdb');
+const { searchMetadata, getMetadata, tmdbToImdb } = require('./tmdb');
 const { guessMediaInfo } = require('./parser');
 const NodeCache = require('node-cache');
 
@@ -83,6 +83,9 @@ async function matchItem(item, tmdbApiKey, type, lang) {
     console.log(`[TMDB] "${info.title}" → "${result.title || result.name}" (${result.id}) anime=${isAnime}`);
 
     const stremioType = type === 'anime' ? 'series' : type;
+
+    // Fetch IMDB ID for metadata enrichment
+    const imdbId = await tmdbToImdb(tmdbApiKey, result.id, tmdbType);
 
     const meta = {
       id:                   `torbox:${stremioType}:${result.id}`,
