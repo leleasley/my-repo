@@ -123,7 +123,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     id: c.id,
     name: c.name,
     character: c.character || '',
-    photo: c.profile_path || null,
+    photo: c.profile_path ? `${TMDB_IMAGE}/w185${c.profile_path}` : null,
   }));
   if (richCast.length > 0) appExtras.cast = richCast;
 
