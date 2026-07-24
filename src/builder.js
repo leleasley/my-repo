@@ -84,11 +84,12 @@ async function matchItem(item, tmdbApiKey, type, lang) {
 
     const stremioType = type === 'anime' ? 'series' : type;
 
-    // Fetch IMDB ID for catalog ID (embeds tt ID in torbox: prefix)
+    // Fetch IMDB ID for metadata enrichment
     const imdbId = await tmdbToImdb(tmdbApiKey, result.id, tmdbType);
 
     const meta = {
-      id:                   imdbId ? `torbox:${stremioType}:${result.id}:${imdbId}` : `torbox:${stremioType}:${result.id}`,
+      id:                   `torbox:${stremioType}:${result.id}`,
+      type:                 stremioType,
       type:                 stremioType,
       name:                 result.title || result.name,
       poster:               result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : null,
