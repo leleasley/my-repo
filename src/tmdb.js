@@ -156,6 +156,9 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   if (type === 'movie') {
     const links = [];
     if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
+    for (const i of (credits?.cast || []).slice(0, 10)) links.push({ name: i.name, category: 'actor', url: `https://www.themoviedb.org/person/${i.id}` });
+    for (const d of (type === 'movie' ? (credits?.crew || []).filter(c => c.job === 'Director') : (detail.created_by || []))) links.push({ name: d.name, category: 'director', url: `https://www.themoviedb.org/person/${d.id}` });
+    for (const w of (credits?.crew || []).filter(c => c.job === 'Writer')) links.push({ name: w.name, category: 'writer', url: `https://www.themoviedb.org/person/${w.id}` });
     for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/movie/${tmdbId}` });
     for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/movie/${tmdbId}` });
 
@@ -196,6 +199,9 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
 
     const links = [];
     if (imdbId) links.push({ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` });
+    for (const i of (credits?.cast || []).slice(0, 10)) links.push({ name: i.name, category: 'actor', url: `https://www.themoviedb.org/person/${i.id}` });
+    for (const d of (detail.created_by || [])) links.push({ name: d.name, category: 'director', url: `https://www.themoviedb.org/person/${d.id}` });
+    for (const w of (credits?.crew || []).filter(c => c.job === 'Writer')) links.push({ name: w.name, category: 'writer', url: `https://www.themoviedb.org/person/${w.id}` });
     for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/tv/${tmdbId}` });
     for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/tv/${tmdbId}` });
 
