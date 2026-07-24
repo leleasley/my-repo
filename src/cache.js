@@ -4,7 +4,7 @@ const NodeCache = require('node-cache');
 let redis = null;
 let isConnected = false;
 
-// Fallback em memória quando Redis não está configurado
+// In-memory fallback when Redis is not configured
 const memCache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
 
 function getRedisClient() {
@@ -27,14 +27,14 @@ function getRedisClient() {
       ...(tls ? { tls: {} } : {}),
     };
 
-    console.log(`[Redis] Conectando via ${url ? 'URL' : `${host}:${port}`}...`);
+    console.log(`[Redis] Connecting via ${url ? 'URL' : `${host}:${port}`}...`);
     redis = url
       ? new Redis(url, opts)
       : new Redis({ host, port, password, ...opts });
 
-    redis.on('error',   (err) => { console.error('[Redis] Erro:', err.message); isConnected = false; });
-    redis.on('connect', ()    => { console.log('[Redis] Conectado'); isConnected = true; });
-    redis.on('close',   ()    => { console.log('[Redis] Conexão fechada'); isConnected = false; });
+    redis.on('error',   (err) => { console.error('[Redis] Error:', err.message); isConnected = false; });
+    redis.on('connect', ()    => { console.log('[Redis] Connected'); isConnected = true; });
+    redis.on('close',   ()    => { console.log('[Redis] Connection closed'); isConnected = false; });
   }
   return redis;
 }
@@ -52,7 +52,7 @@ async function get(key) {
     console.log(`[Cache] HIT → ${key}`);
     return JSON.parse(data);
   } catch (err) {
-    console.error(`[Cache] Erro ao buscar ${key}:`, err.message);
+    console.error(`[Cache] Error fetching ${key}:`, err.message);
     const val = memCache.get(key);
     return val !== undefined ? val : null;
   }
@@ -67,10 +67,10 @@ async function set(key, value, ttl = 3600) {
   try {
     await client.setex(key, ttl, JSON.stringify(value));
     console.log(`[Cache] SET → ${key} (TTL: ${ttl}s)`);
-    memCache.set(key, value, ttl); // espelho em memória para leitura rápida
+    memCache.set(key, value, ttl); // mirror in memory for fast reads
     return true;
   } catch (err) {
-    console.error(`[Cache] Erro ao armazenar ${key}:`, err.message);
+    console.error(`[Cache] Error storing ${key}:`, err.message);
     memCache.set(key, value, ttl);
     return false;
   }
@@ -84,13 +84,13 @@ async function del(key) {
     await client.del(key);
     return true;
   } catch (err) {
-    console.error(`[Cache] Erro ao deletar ${key}:`, err.message);
+    console.error(`[Cache] Error deleting ${key}:`, err.message);
     return false;
   }
 }
 
 async function delPattern(pattern) {
-  // Limpar memCache por padrão
+  // Clear memCache by pattern
   const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
   for (const k of memCache.keys()) { if (regex.test(k)) memCache.del(k); }
 
@@ -100,10 +100,10 @@ async function delPattern(pattern) {
     const keys = await client.keys(pattern);
     if (keys.length === 0) return 0;
     await client.del(...keys);
-    console.log(`[Cache] DEL Pattern → ${pattern} (${keys.length} chaves)`);
+    console.log(`[Cache] DEL Pattern → ${pattern} (${keys.length} keys)`);
     return keys.length;
   } catch (err) {
-    console.error(`[Cache] Erro ao deletar padrão ${pattern}:`, err.message);
+    console.error(`[Cache] Error deleting pattern ${pattern}:`, err.message);
     return 0;
   }
 }
@@ -116,7 +116,7 @@ async function exists(key) {
     const result = await client.exists(key);
     return result === 1;
   } catch (err) {
-    console.error(`[Cache] Erro ao verificar ${key}:`, err.message);
+    console.error(`[Cache] Error checking ${key}:`, err.message);
     return false;
   }
 }
@@ -129,7 +129,7 @@ async function expire(key, ttl) {
     await client.expire(key, ttl);
     return true;
   } catch (err) {
-    console.error(`[Cache] Erro ao definir TTL para ${key}:`, err.message);
+    console.error(`[Cache] Error setting TTL for ${key}:`, err.message);
     return false;
   }
 }
@@ -152,7 +152,7 @@ async function getStats() {
       }, {}),
     };
   } catch (err) {
-    console.error('[Cache] Erro ao obter estatísticas:', err.message);
+    console.error('[Cache] Error getting stats:', err.message);
     return { connected: false, error: err.message };
   }
 }

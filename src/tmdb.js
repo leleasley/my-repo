@@ -134,20 +134,27 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/movie/${tmdbId}` });
     for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/movie/${tmdbId}` });
 
+    const slug = (detail.title || detail.original_title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
     const result = {
       id: `torbox:movie:${tmdbId}`, tmdbId, imdbId,
       type: 'movie',
       name: detail.title || detail.original_title,
+      slug: `movie/${slug}-${tmdbId}`,
       year: detail.release_date?.split('-')[0],
       poster, background,
       description: detail.overview,
       runtime: detail.runtime ? `${detail.runtime} min` : undefined,
-      genres, cast, director: directors, writer: writers,
+      genres, genre: genres, cast, director: directors, writer: writers,
       trailerStreams: trailer ? [{ title: 'Trailer', ytId: trailer.key }] : [],
+      trailers: trailer ? [{ source: trailer.key, type: 'Trailer' }] : [],
       releaseInfo: detail.release_date?.split('-')[0],
       released: detail.release_date ? new Date(detail.release_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
+      country: (detail.production_countries || []).map(c => c.name).join(', ') || undefined,
+      awards: detail.tagline || undefined,
       links,
+      behaviorHints: { defaultVideoId: `torbox:movie:${tmdbId}` },
     };
     tmdbCache.set(cacheKey, result);
     return result;
@@ -164,21 +171,27 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     for (const n of networks.slice(0, 3)) links.push({ name: n, category: 'network', url: `https://www.themoviedb.org/tv/${tmdbId}` });
     for (const c of productionCompanies.slice(0, 3)) links.push({ name: c, category: 'production', url: `https://www.themoviedb.org/tv/${tmdbId}` });
 
+    const slug = (detail.name || detail.original_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
     const result = {
       id: `torbox:series:${tmdbId}`, tmdbId, imdbId,
       type: 'series',
       name: detail.name || detail.original_name,
+      slug: `series/${slug}-${tmdbId}`,
       year: detail.first_air_date?.split('-')[0],
       poster, background,
       description: detail.overview,
-      genres, cast, director: directors, writer: writers,
+      genres, genre: genres, cast, director: directors, writer: writers,
       trailerStreams: trailer ? [{ title: 'Trailer', ytId: trailer.key }] : [],
+      trailers: trailer ? [{ source: trailer.key, type: 'Trailer' }] : [],
       releaseInfo: detail.first_air_date?.split('-')[0],
       released: detail.first_air_date ? new Date(detail.first_air_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
-      videos,
+      country: (detail.origin_countries || []).join(', ') || undefined,
       links,
+      videos,
       status: detail.status,
+      behaviorHints: { defaultVideoId: videos?.[0]?.id },
     };
     tmdbCache.set(cacheKey, result);
     return result;

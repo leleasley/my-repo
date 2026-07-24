@@ -430,7 +430,7 @@
     const origin      = window.location.origin;
     const manifestUrl = `${origin}/${encoded}/manifest.json`;
     const stremioDeep = manifestUrl.replace(/^https?:\/\//, 'stremio://');
-    const stremioWeb  = `https://web.stremio.com/#?addon=${encodeURIComponent(manifestUrl)}`;
+    const stremioWeb  = `https://web.stremio.com/#/addons?addon=${encodeURIComponent(manifestUrl)}`;
     const nuvioDeep   = manifestUrl.replace(/^https?:\/\//, 'nuvio://');
 
     setTimeout(() => {

@@ -30,11 +30,11 @@ async function rdGet(path, apiKey, params = {}) {
 }
 
 async function getRealDebridDownloads(apiKey) {
-  // Busca primeira página para saber se há mais
+  // Fetch first page to see if there are more
   const { data: first, error } = await rdGet('/torrents', apiKey, { page: 1, limit: 100 });
   if (error || !Array.isArray(first) || first.length === 0) return [];
 
-  // Se primeira página já está cheia, buscar páginas adicionais em paralelo (até 10 páginas = 1000 itens)
+  // If first page is already full, fetch additional pages in parallel (up to 10 pages = 1000 items)
   let allPages = [first];
   if (first.length === 100) {
     let page = 2;
@@ -67,7 +67,7 @@ async function getRealDebridDownloads(apiKey) {
     }
   }
 
-  console.log(`[RD] Downloads: ${items.length} itens`);
+  console.log(`[RD] Downloads: ${items.length} items`);
   return items;
 }
 
@@ -84,7 +84,7 @@ async function getRealDebridStreamLink(apiKey, itemId, fileId) {
   const { data: info, error } = await getRealDebridInfoCached(apiKey, itemId);
   if (error || !info?.links?.length) return null;
 
-  // fileId é 1-based index dos arquivos selecionados
+  // fileId is 1-based index of selected files
   const selectedFiles = (info.files || []).filter(f => f.selected === 1);
   const fileIndex = selectedFiles.findIndex(f => f.id === fileId);
   const link = info.links[fileIndex >= 0 ? fileIndex : 0];

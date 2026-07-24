@@ -6,8 +6,8 @@ let usenetUnavailableLogged = false;
 
 async function torboxGet(path, apiKey, params = {}) {
   if (!apiKey || apiKey.length < 10) {
-    console.error('[TorBox] API key inválida ou ausente');
-    return { error: 'API key inválida', status: 401 };
+    console.error('[TorBox] API key invalid or missing');
+    return { error: 'API key invalid', status: 401 };
   }
   
   const headers = { Authorization: `Bearer ${apiKey}` };
@@ -42,40 +42,40 @@ async function getTorBoxDownloads(apiKey) {
   if (!torrentsResult.error) {
     const data = torrentsResult.data?.data;
     const list = Array.isArray(data) ? data : (data ? [data] : []);
-    console.log(`[TorBox] Torrents: ${list.length} itens`);
+    console.log(`[TorBox] Torrents: ${list.length} items`);
     items = items.concat(list.map(t => ({ ...t, source: 'torrent' })));
   } else {
     const s = torrentsResult.status;
     if (s === 403) {
-      console.error('[TorBox] Torrents: acesso negado (403). Verifique se a chave de API está correta e ativa.');
+      console.error('[TorBox] Torrents: access denied (403). Check that your API key is correct and active.');
     } else if (s === 401) {
-      console.error('[TorBox] Torrents: chave de API inválida (401).');
+      console.error('[TorBox] Torrents: API key invalid (401).');
     } else {
-      console.error(`[TorBox] Torrents: erro ${s ?? 'desconhecido'} — ${torrentsResult.error}`);
+      console.error(`[TorBox] Torrents: error ${s ?? 'unknown'} — ${torrentsResult.error}`);
     }
   }
 
   if (!usenetResult.error) {
     const data = usenetResult.data?.data;
     const list = Array.isArray(data) ? data : (data ? [data] : []);
-    console.log(`[TorBox] Usenet: ${list.length} itens`);
+    console.log(`[TorBox] Usenet: ${list.length} items`);
     items = items.concat(list.map(u => ({ ...u, source: 'usenet' })));
   } else {
     const s = usenetResult.status;
     if (s === 403 || s === 401) {
       if (!usenetUnavailableLogged) {
-        console.log('[TorBox] Usenet: não disponível neste plano (ignorando).');
+        console.log('[TorBox] Usenet: not available on this plan (ignoring).');
         usenetUnavailableLogged = true;
       }
     } else {
-      console.error(`[TorBox] Usenet: erro ${s ?? 'desconhecido'} — ${usenetResult.error}`);
+      console.error(`[TorBox] Usenet: error ${s ?? 'unknown'} — ${usenetResult.error}`);
     }
   }
 
-  console.log(`[TorBox] Total antes do filtro: ${items.length}`);
+  console.log(`[TorBox] Total before filter: ${items.length}`);
 
   const states = [...new Set(items.map(i => i.download_state))];
-  if (states.length > 0) console.log(`[TorBox] Estados encontrados:`, states);
+  if (states.length > 0) console.log(`[TorBox] States found:`, states);
 
   const completed = items.filter(i => {
     const state = (i.download_state || '').toLowerCase();
@@ -89,7 +89,7 @@ async function getTorBoxDownloads(apiKey) {
     );
   });
 
-  console.log(`[TorBox] Itens concluídos: ${completed.length}`);
+  console.log(`[TorBox] Completed items: ${completed.length}`);
   if (completed.length > 0) {
     console.log(`[TorBox] Amostra:`, completed[0].name || completed[0].filename);
   }

@@ -11,7 +11,7 @@ const matchCache = new NodeCache({ stdTTL: 86400, checkperiod: 3600 });
 const IS_SERVERLESS = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 function loadPersistentCache() {
-  if (IS_SERVERLESS) return; // Skip em ambientes serverless
+  if (IS_SERVERLESS) return; // Skip in serverless environments
   try {
     if (fs.existsSync(CACHE_FILE)) {
       const data = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
@@ -23,7 +23,7 @@ function loadPersistentCache() {
 }
 
 function savePersistentCache() {
-  if (IS_SERVERLESS) return; // Skip em ambientes serverless
+  if (IS_SERVERLESS) return; // Skip in serverless environments
   try {
     const data = {};
     for (const k of matchCache.keys()) {
@@ -56,7 +56,7 @@ async function matchItem(item, tmdbApiKey, type, lang) {
   const info = guessMediaInfo(name);
   if (!info) { matchCache.set(cacheKey, null); return null; }
 
-  // Validação simplificada de tipo
+  // Simplified type validation
   if (type === 'movie' && info.isSeries) { matchCache.set(cacheKey, null); return null; }
   if (type === 'series' && (!info.isSeries || info.isAnime)) { matchCache.set(cacheKey, null); return null; }
   if (type === 'anime' && !info.isSeries) { matchCache.set(cacheKey, null); return null; }
@@ -67,14 +67,14 @@ async function matchItem(item, tmdbApiKey, type, lang) {
 
     const isAnime = isTmdbAnime(result);
     
-    // Rejeitar animes no catálogo de séries
+    // Reject anime in series catalog
     if (type === 'series' && isAnime) {
-      console.log(`[TMDB] "${info.title}" é anime — excluído de séries`);
+      console.log(`[TMDB] "${info.title}" is anime — excluded from series`);
       matchCache.set(cacheKey, null);
       return null;
     }
     
-    // Aceitar animes no catálogo de anime mesmo sem detecção do parser
+    // Accept anime in anime catalog even without parser detection
     if (type === 'anime' && !isAnime && !info.isAnime) {
       matchCache.set(cacheKey, null);
       return null;
@@ -120,7 +120,7 @@ async function buildCatalog(downloads, tmdbApiKey, type, sortBy, extra, lang = '
     if (!info) continue;
     if (type === 'movie'  && (info.isSeries || info.isAnime))  continue;
     if (type === 'series' && (!info.isSeries || info.isAnime)) continue;
-    if (type === 'anime'  && !info.isSeries)                   continue; // anime usa SxxExx ou formato proprio
+    if (type === 'anime'  && !info.isSeries)                   continue; // anime uses SxxExx or custom format
     allRelevant.push({ item, info });
   }
 
@@ -169,13 +169,13 @@ async function buildCatalog(downloads, tmdbApiKey, type, sortBy, extra, lang = '
 async function buildMeta(tmdbId, type, tmdbApiKey, lang, torboxApiKey, rdApiKey) {
   const tmdbType = type === 'series' || type === 'anime' ? 'series' : 'movie';
 
-  // Verificar se tmdbindex já tem entradas antes de buscar downloads
+  // Check if tmdbindex already has entries before fetching downloads
   const indexKey = `${type}:${tmdbId}`;
   const existingEntries = tmdbindex.get(indexKey)
     || tmdbindex.get(`series:${tmdbId}`)
     || tmdbindex.get(`anime:${tmdbId}`);
 
-  // Buscar metadados TMDB; downloads só se necessário
+  // Fetch TMDB metadata; downloads only if needed
   const [meta, tbDownloads, rdDownloads] = await Promise.all([
     getMetadata(tmdbApiKey, tmdbId, tmdbType, lang),
     (!existingEntries?.length && torboxApiKey) ? getTorBoxDownloads(torboxApiKey) : Promise.resolve([]),
@@ -190,7 +190,7 @@ async function buildMeta(tmdbId, type, tmdbApiKey, lang, torboxApiKey, rdApiKey)
     const availableEps = new Set();
     const indexEntries = [];
 
-    // Se o tmdbindex já tem entradas para este título (populado pelo catálogo), usar direto
+    // If tmdbindex already has entries for this title (populated by catalog), use directly
     if (existingEntries?.length > 0) {
       for (const { item, season, episode, episodeEnd } of existingEntries) {
         indexEntries.push({ item, season, episode, episodeEnd });
@@ -205,7 +205,7 @@ async function buildMeta(tmdbId, type, tmdbApiKey, lang, torboxApiKey, rdApiKey)
         }
       }
     } else {
-      // Índice não populado — fazer match completo, mas em paralelo por título único
+      // Index not populated — full match, but in parallel per unique title
       const titleCache = new Map();
       const toSearch   = [];
 
@@ -235,7 +235,7 @@ async function buildMeta(tmdbId, type, tmdbApiKey, lang, torboxApiKey, rdApiKey)
         }
       }
 
-      // Buscar títulos únicos no TMDB em paralelo
+      // Fetch unique titles on TMDB in parallel
       const uniqueTitles = [...new Set(toSearch.filter(x => x.tk).map(x => x.tk))];
       await Promise.all(uniqueTitles.map(async tk => {
         if (titleCache.has(tk)) return;
@@ -270,7 +270,7 @@ async function buildMeta(tmdbId, type, tmdbApiKey, lang, torboxApiKey, rdApiKey)
 
     if (indexEntries.length > 0) {
       tmdbindex.set(indexKey, indexEntries);
-      console.log(`[Meta] Índice atualizado: ${indexKey} → ${indexEntries.length} items`);
+      console.log(`[Meta] Index updated: ${indexKey} → ${indexEntries.length} items`);
     }
 
     if (availableEps.size > 0) {
@@ -280,20 +280,20 @@ async function buildMeta(tmdbId, type, tmdbApiKey, lang, torboxApiKey, rdApiKey)
         availableEps.has(`season:${v.season}`) ||
         availableEps.has('all')
       );
-      console.log(`[Meta] tmdbId=${tmdbId} → ${meta.videos.length}/${totalBefore} eps disponíveis`);
+      console.log(`[Meta] tmdbId=${tmdbId} → ${meta.videos.length}/${totalBefore} eps available`);
     } else {
       meta.videos = [];
-      console.log(`[Meta] tmdbId=${tmdbId} → nenhum episódio disponível`);
+      console.log(`[Meta] tmdbId=${tmdbId} → no episodes available`);
     }
   } catch (e) {
-    console.error('[Meta] Erro ao filtrar eps:', e.message);
+    console.error('[Meta] Error filtering episodes:', e.message);
   }
 
   return meta;
 }
 
 async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, episode, lang, rdApiKey) {
-  // Tentar ambos os índices (series e anime) pois o ID sempre é torbox:series:X
+  // Try both indexes (series and anime) since ID is always torbox:series:X
   const possibleKeys = [
     `${type === 'anime' ? 'series' : type}:${tmdbId}`,
     `series:${tmdbId}`,
@@ -312,11 +312,11 @@ async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, epis
     }
   }
 
-  console.log(`[Stream] Buscando tmdbId=${tmdbId} type=${type} | s=${season} e=${episode}`);
-  console.log(`[Stream] Índice encontrado: ${usedKey || 'nenhum'} (${entries?.length || 0} items)`);
+  console.log(`[Stream] Looking up tmdbId=${tmdbId} type=${type} | s=${season} e=${episode}`);
+  console.log(`[Stream] Index found: ${usedKey || 'none'} (${entries?.length || 0} items)`);
 
   if (!entries || entries.length === 0) {
-    console.log(`[Stream] Reconstruindo índice...`);
+    console.log(`[Stream] Rebuilding index...`);
     entries = [];
     const [tbDownloads, rdDownloads] = await Promise.all([
       torboxApiKey ? getTorBoxDownloads(torboxApiKey) : Promise.resolve([]),
@@ -342,7 +342,7 @@ async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, epis
     }
 
     if (entries.length === 0 && tmdbApiKey) {
-      console.log(`[Stream] Fallback TMDB...`);
+      console.log(`[Stream] TMDB fallback...`);
       const tmdbType = type === 'movie' ? 'movie' : 'series';
       const candidates = (downloads || []).filter(item => {
         const name = item.name || item.filename || '';
@@ -368,16 +368,16 @@ async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, epis
     if (entries.length > 0) {
       const saveKey = `${type === 'movie' ? 'movie' : 'series'}:${tmdbId}`;
       tmdbindex.set(saveKey, entries);
-      console.log(`[Stream] Índice salvo: ${saveKey} → ${entries.length} items`);
+      console.log(`[Stream] Index saved: ${saveKey} → ${entries.length} items`);
     }
   }
 
   if (!entries || entries.length === 0) {
-    console.log(`[Stream] Nenhum item encontrado`);
+    console.log(`[Stream] No items found`);
     return [];
   }
 
-  console.log(`[Stream] Filtrando ${entries.length} items (primeiros 3):`);
+  console.log(`[Stream] Filtering ${entries.length} items (first 3):`);
   entries.slice(0, 3).forEach((e, i) => {
     console.log(`  [${i}] s=${e.season} e=${e.episode}${e.episodeEnd ? `-${e.episodeEnd}` : ''} | ${e.item.name?.substring(0, 50)}`);
   });
@@ -385,13 +385,13 @@ async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, epis
   let filtered;
   if (type === 'series' || type === 'anime') {
     const strict = entries.filter(({ season: s, episode: e, episodeEnd: eEnd }) => {
-      // Se a temporada não bate, rejeitar
+      // If season doesn't match, reject
       if (season != null && season !== '' && s != null && String(s) !== String(season)) return false;
       
-      // Se o item não tem episódio específico (pack completo), aceitar pela temporada
+      // If item has no specific episode (full pack), accept by season
       if (e == null) return true;
       
-      // Se tem episódio, validar range
+      // If has episode, validate range
       if (episode != null && episode !== '') {
         const epReq  = parseInt(episode, 10);
         const epFrom = parseInt(e, 10);
@@ -403,7 +403,7 @@ async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, epis
 
     if (strict.length > 0) {
       filtered = strict;
-      console.log(`[Stream] Filtro estrito: ${filtered.length} entries`);
+      console.log(`[Stream] Strict filter: ${filtered.length} entries`);
     } else {
       const epOnly = (episode != null && episode !== '')
         ? entries.filter(({ episode: e, episodeEnd: eEnd }) => {
@@ -432,7 +432,7 @@ async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, epis
     filtered = entries;
   }
   
-  console.log(`[Stream] ${filtered.length} item(s) filtrados | s=${season} e=${episode}`);
+  console.log(`[Stream] ${filtered.length} item(s) filtered | s=${season} e=${episode}`);
 
   const rawStreams = [];
   await Promise.all(filtered.map(async ({ item }) => {
@@ -460,7 +460,7 @@ async function buildStreams(torboxApiKey, tmdbApiKey, type, tmdbId, season, epis
       });
       if (byEp.length > 0) {
         targetFiles = byEp;
-        console.log(`[Stream] Pack filtrado: ${byEp.length}/${videoFiles.length} arquivos para s=${season} e=${episode}`);
+        console.log(`[Stream] Pack filtered: ${byEp.length}/${videoFiles.length} files for s=${season} e=${episode}`);
       }
     }
 
@@ -528,10 +528,10 @@ function toSmallCaps(str = '') {
   return str.toLowerCase().split('').map(c => SMALL_CAPS_MAP[c] || c).join('');
 }
 
-// ── Grupos de release brasileiros (flag 🇧🇷) ──────────────────────────────
+// ── Brazilian release groups (flag 🇧🇷) ──────────────────────────────
 const BR_GROUP_RE = /^(bioma|c76|franceira|sigla|sf|tossato|sh4down|7sprit7|pia|riper|tomtom|andrehsa|fly|cza)$/i;
 
-// ── Extratores ────────────────────────────────────────────────────────────
+// ── Extractors ────────────────────────────────────────────────────────────
 
 function extractQuality(n = '') {
   const u = n.toUpperCase();
@@ -543,7 +543,7 @@ function extractQuality(n = '') {
   return '';
 }
 
-/** Retorna array de tags visuais estilo AIOStreams (HDR10+, DV, 10bit…) */
+/** Returns array of visual tags in AIOStreams style (HDR10+, DV, 10bit…) */
 function extractVisualTags(n = '') {
   const u = n.toUpperCase();
   const tags = [];
@@ -581,7 +581,7 @@ function extractAudio(n = '') {
   else if (u.match(/\bPT.?PT\b/))                 parts.push('PT-PT');
   else if (u.match(/\bLEGENDADO\b/))              parts.push('Leg.');
   else if (u.match(/\bENG(LISH)?\b/))             parts.push('EN');
-  // Codec de áudio: TrueHD + Atmos podem coexistir
+  // Audio codec: TrueHD + Atmos can coexist
   if (u.match(/\bTRUEHD\b/))                      parts.push('TrueHD');
   if (u.match(/\bATMOS\b/))                        parts.push('Atmos');
   else if (!u.match(/\bTRUEHD\b/)) {
@@ -615,14 +615,14 @@ function formatBytes(bytes) {
     : `${(bytes / 1024 / 1024).toFixed(0)} ᴍʙ`;
 }
 
-// ── Formatadores principais ───────────────────────────────────────────────
+// ── Main formatters ───────────────────────────────────────────────────────
 
 /**
- * Linha de título do stream (campo `name`).
- * Formato inspirado no AIOStreams:
- *   Linha 1 → provedor + indicador ⚡ cached
- *   Linha 2 → resolução · fonte
- *   Linha 3 → visual tags (HDR / DV / 10bit) — só se existirem
+ * Stream title line (`name` field).
+ * Format inspired by AIOStreams:
+ *   Line 1 → provider + ⚡ cached indicator
+ *   Line 2 → resolution · source
+ *   Line 3 → visual tags (HDR / DV / 10bit) — only if present
  */
 function formatStreamName(filename = '', source = '') {
   const provider = source === 'realdebrid' ? '🔴 RD' : '📦 TorBox';
@@ -639,12 +639,12 @@ function formatStreamName(filename = '', source = '') {
 }
 
 /**
- * Descrição detalhada do stream (campo `description`).
- * Formato inspirado no AIOStreams:
- *   Linha 1 → tamanho  codec
- *   Linha 2 → áudio  legendas
- *   Linha 3 → grupo (com 🇧🇷 se for grupo brasileiro)
- *   Linha 4 → nome do arquivo em smallcaps
+ * Detailed stream description (`description` field).
+ * Format inspired by AIOStreams:
+ *   Line 1 → size  codec
+ *   Line 2 → audio  subtitles
+ *   Line 3 → group (with 🇧🇷 if Brazilian group)
+ *   Line 4 → filename in smallcaps
  */
 function formatStreamDesc(filename = '', size, source) {
   const display   = filename.replace(/\.(mkv|mp4|avi|mov|ts|wmv|m4v|webm)$/i, '');
@@ -657,24 +657,24 @@ function formatStreamDesc(filename = '', size, source) {
 
   const lines = [];
 
-  // Linha 1: tamanho + codec
+  // Line 1: size + codec
   const infoRow = [sz, codec ? `⚙️ ${codec}` : ''].filter(Boolean).join('   ');
   if (infoRow) lines.push(infoRow);
 
-  // Linha 2: áudio + legendas
+  // Line 2: audio + subtitles
   const audioRow = [
     langStr ? `🔊 ${langStr}` : '',
     subs    ? `💬 ${subs}`    : '',
   ].filter(Boolean).join('   ');
   if (audioRow) lines.push(audioRow);
 
-  // Linha 3: grupo (flag BR para grupos conhecidos)
+  // Line 3: group (BR flag for known groups)
   if (group) {
     const flag = isBR ? '🇧🇷 ' : '';
     lines.push(`${flag}🫟 ${toSmallCaps(group)}`);
   }
 
-  // Linha 4: nome do arquivo em smallcaps
+  // Line 4: filename in smallcaps
   if (display) lines.push(`✔️${toSmallCaps(display)}`);
 
   return lines.join('\n');

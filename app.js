@@ -9,8 +9,8 @@ const ROOT_DIR = path.resolve(__dirname);
 
 const IS_SERVERLESS = !!process.env.VERCEL;
 
-const TTL_CATALOG = parseInt(process.env.CACHE_TTL_CATALOG) || 3600;   // padrão 1h
-const TTL_STREAM  = parseInt(process.env.CACHE_TTL_STREAM)  || 21600;  // padrão 6h
+const TTL_CATALOG = parseInt(process.env.CACHE_TTL_CATALOG) || 3600;   // default 1h
+const TTL_STREAM  = parseInt(process.env.CACHE_TTL_STREAM)  || 21600;  // default 6h
 
 const knownConfigs = IS_SERVERLESS ? null : new Map();
 
@@ -72,7 +72,7 @@ async function buildAndCacheForConfig(token, config) {
   const { torboxApiKey, rdApiKey, tmdbApiKey, sortBy = 'data_adicao', lang = 'pt-BR', rdCatalog = 'merge' } = config;
   if (!tmdbApiKey) return;
 
-  console.log(`[Cache] Refresh para ...${token.slice(-8)} (${lang})`);
+  console.log(`[Cache] Refresh for ...${token.slice(-8)} (${lang})`);
   try {
     const [tbDownloads, rdDownloads] = await Promise.all([
       torboxApiKey ? getTorBoxDownloads(torboxApiKey) : Promise.resolve([]),
@@ -86,7 +86,7 @@ async function buildAndCacheForConfig(token, config) {
     const oldHash = await cache.get(hashKey);
 
     if (oldHash === newHash) {
-      console.log(`[Cache] Downloads inalterados, skip rebuild`);
+      console.log(`[Cache] Downloads unchanged, skip rebuild`);
       return;
     }
     await cache.set(hashKey, newHash, 7200);
@@ -101,11 +101,11 @@ async function buildAndCacheForConfig(token, config) {
         const metas    = await buildCatalog(downloads, tmdbApiKey, type, sortBy, { skip: 0, search: '' }, lang);
         const cacheKey = cache.makeKey('cat', key, type, sortBy, '', (torboxApiKey || rdApiKey).slice(-6), lang);
         await cache.set(cacheKey, { metas }, TTL_CATALOG);
-        console.log(`[Cache] ${key}:${type} → ${metas.length} itens`);
+        console.log(`[Cache] ${key}:${type} → ${metas.length} items`);
       })
     ));
   } catch (err) {
-    console.error('[Cache] Erro:', err.message);
+    console.error('[Cache] Error:', err.message);
   }
 }
 
@@ -160,8 +160,8 @@ function getConfiguredManifest(baseUrl, config = {}) {
       { id: 'torbox-movies', type: 'movie',  name: '🎬 TorBox Films', extra: [{ name: 'skip' }, { name: 'search' }] },
       { id: 'torbox-series', type: 'series', name: '📺 TorBox Series',  extra: [{ name: 'skip' }, { name: 'search' }] },
       { id: 'torbox-anime',  type: 'series', name: '🍥 TorBox Animes',  extra: [{ name: 'skip' }, { name: 'search' }] },
-      { id: 'rd-movies',     type: 'movie',  name: '🔴 Real-Debrid Filmes', extra: [{ name: 'skip' }, { name: 'search' }] },
-      { id: 'rd-series',     type: 'series', name: '🔴 Real-Debrid Séries',  extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'rd-movies',     type: 'movie',  name: '🔴 Real-Debrid Films', extra: [{ name: 'skip' }, { name: 'search' }] },
+      { id: 'rd-series',     type: 'series', name: '🔴 Real-Debrid Series',  extra: [{ name: 'skip' }, { name: 'search' }] },
       { id: 'rd-anime',      type: 'series', name: '🔴 Real-Debrid Animes',  extra: [{ name: 'skip' }, { name: 'search' }] },
     );
   }
@@ -217,7 +217,7 @@ app.get('/health', async (req, res) => {
 app.post('/cache/clear', async (req, res) => {
   try {
     const deleted = await cache.delPattern('*');
-    res.json({ success: true, deleted, message: 'Cache limpo com sucesso' });
+    res.json({ success: true, deleted, message: 'Cache cleared successfully' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -225,16 +225,16 @@ app.post('/cache/clear', async (req, res) => {
 
 app.post('/:token/cache/clear', async (req, res) => {
   const config = decodeConfig(req.params.token);
-  if (!config) return res.status(400).json({ error: 'Token inválido' });
+  if (!config) return res.status(400).json({ error: 'Invalid token' });
   
   try {
     const { torboxApiKey, rdApiKey } = config;
     const userKey = (torboxApiKey || rdApiKey || '').slice(-6);
-    if (!userKey) return res.status(400).json({ error: 'Nenhuma chave configurada' });
+    if (!userKey) return res.status(400).json({ error: 'No key configured' });
     
     const pattern = `*${userKey}*`;
     const deleted = await cache.delPattern(pattern);
-    res.json({ success: true, deleted, message: 'Cache do usuário limpo' });
+    res.json({ success: true, deleted, message: 'User cache cleared' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -357,7 +357,7 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
   try {
     const userKey = (torboxApiKey || rdApiKey || '').slice(-6);
 
-    // Para filmes: prefetch do stream em paralelo com buildMeta
+    // For movies: prefetch stream in parallel with buildMeta
     const streamCacheKey = cache.makeKey('stream', type, tmdbId, '', '', userKey);
     const streamPrefetch = type === 'movie'
       ? cache.get(streamCacheKey).then(hit => {
@@ -378,7 +378,7 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
     res.json(result);
 
-    // Para séries: prefetch dos streams do primeiro episódio em background após responder
+    // For series: prefetch first episode streams in background after responding
     if (type === 'series' && meta?.videos?.length > 0) {
       const firstEp = meta.videos[0];
       const epKey   = cache.makeKey('stream', type, tmdbId, String(firstEp.season), String(firstEp.episode), userKey);
