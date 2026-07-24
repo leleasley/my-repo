@@ -241,14 +241,18 @@ app.post('/:token/cache/clear', async (req, res) => {
 });
 
 app.get('/manifest.json', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800, immutable');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.json(getBaseManifest(req.protocol + '://' + req.get('host')));
 });
 
 app.get('/:token/manifest.json', (req, res) => {
   const config = decodeConfig(req.params.token);
   if (!config) return res.status(400).json({ error: 'Invalid token' });
-  res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800, immutable');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.json(getConfiguredManifest(req.protocol + '://' + req.get('host'), config));
 });
 
@@ -286,7 +290,7 @@ async function handleCatalog(req, res) {
 
   if (cached) {
     console.log(`[Catalog] Cache hit → ${cached.metas.length} items`);
-    res.setHeader('Cache-Control', `public, max-age=${TTL_CATALOG}, stale-while-revalidate=${TTL_CATALOG * 6}`);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     return res.json(cached);
   }
 
@@ -312,7 +316,7 @@ async function handleCatalog(req, res) {
     const result = { metas };
     await cache.set(cacheKey, result, TTL_CATALOG);
 
-    res.setHeader('Cache-Control', `public, max-age=${TTL_CATALOG}, stale-while-revalidate=${TTL_CATALOG * 6}`);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     res.json(result);
   } catch (err) {
     console.error('[Catalog] Error:', err.message);
@@ -349,7 +353,7 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
 
   if (cached) {
     console.log(`[Meta] Cache hit: ${id} → ${cached.meta?.videos?.length || 0} eps`);
-    res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     return res.json(cached);
   }
 
@@ -375,7 +379,7 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
       streamPrefetch,
     ]);
 
-    res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     res.json(result);
 
     // For series: prefetch first episode streams in background after responding
@@ -441,7 +445,7 @@ app.get('/:token/stream/:type/:id.json', async (req, res) => {
     const streamCacheKey = cache.makeKey('stream', type, tmdbId, season || '', episode || '', userKey);
     const cachedStreams  = await cache.get(streamCacheKey);
     if (cachedStreams) {
-      res.setHeader('Cache-Control', `public, max-age=${TTL_STREAM}, stale-while-revalidate=${TTL_STREAM * 2}`);
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
       return res.json(cachedStreams);
     }
 
@@ -449,7 +453,7 @@ app.get('/:token/stream/:type/:id.json', async (req, res) => {
     const result  = { streams };
     await cache.set(streamCacheKey, result, TTL_STREAM);
 
-    res.setHeader('Cache-Control', `public, max-age=${TTL_STREAM}, stale-while-revalidate=${TTL_STREAM * 2}`);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     res.json(result);
   } catch (err) {
     console.error('[Stream] Error:', err.message);

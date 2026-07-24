@@ -137,7 +137,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     const slug = (detail.title || detail.original_title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
     const result = {
-      id: imdbId ? `${imdbId}` : `torbox:movie:${tmdbId}`, tmdbId, imdbId,
+      id: `torbox:movie:${tmdbId}`, tmdbId, imdbId,
       imdb_id: imdbId || undefined,
       moviedb_id: tmdbId,
       type: 'movie',
@@ -176,7 +176,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     const slug = (detail.name || detail.original_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
     const result = {
-      id: imdbId ? `${imdbId}` : `torbox:series:${tmdbId}`, tmdbId, imdbId,
+      id: `torbox:series:${tmdbId}`, tmdbId, imdbId,
       imdb_id: imdbId || undefined,
       moviedb_id: tmdbId,
       type: 'series',
