@@ -203,6 +203,7 @@ function getConfiguredManifest(baseUrl, config = {}) {
 app.get('/', (req, res) => res.sendFile(path.join(ROOT_DIR, 'landing.html')));
 app.get('/configure', (req, res) => res.sendFile(path.join(ROOT_DIR, 'configure.html')));
 app.get('/my-library', (req, res) => res.sendFile(path.join(ROOT_DIR, 'public', 'my-library.html')));
+app.get('/discover', (req, res) => res.sendFile(path.join(ROOT_DIR, 'public', 'discover.html')));
 
 // Lightweight TorBox API proxy for client-side library browser
 // No data stored — just forwards requests with CORS headers

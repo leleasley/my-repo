@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#09090b" />
+  <title>LeLibrary — Discover</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #09090b; --surface: #111114; --surface2: #161619;
+      --border: #1e1e22; --border2: #27272a;
+      --amber: #f59e0b; --amber-dim: #b45309; --amber-glow: rgba(245,158,11,0.12);
+      --white: #fafafa; --text: #d4d4d8; --muted: #71717a;
+      --success: #22c55e; --error: #ef4444;
+      --font: 'Space Grotesk', -apple-system, sans-serif;
+      --mono: 'DM Mono', 'Menlo', monospace;
+    }
+    html, body { height: 100%; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100%; padding: 1rem; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245,158,11,0.08) 0%, transparent 70%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(245,158,11,0.04) 0%, transparent 60%); }
+    .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: .75rem 0; margin-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .logo-wrap { display: flex; align-items: center; gap: .5rem; text-decoration: none; }
+    .logo-wrap img { width: 28px; height: 28px; border-radius: 6px; }
+    .logo-wrap span { font-size: 1rem; font-weight: 700; color: var(--amber); }
+    .header-links { display: flex; gap: .75rem; align-items: center; }
+    .header-links a { color: var(--muted); text-decoration: none; font-size: .78rem; font-weight: 500; transition: color .2s; }
+    .header-links a:hover { color: var(--amber); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; z-index: 101; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); transform-origin: center; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { position: fixed; top: 52px; left: 0; right: 0; background: var(--surface); border-bottom: 1px solid var(--border); flex-direction: column; padding: 0 24px; z-index: 99; max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease, padding 0.35s cubic-bezier(0.4,0,0.2,1); }
+    .mobile-menu.open { max-height: 300px; opacity: 1; padding: 12px 24px 16px; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; font-size: .85rem; font-weight: 500; padding: 10px 0; border-bottom: 1px solid var(--border); opacity: 0; transform: translateY(-8px); transition: opacity 0.25s ease, transform 0.25s ease, color 0.2s; }
+    .mobile-menu.open a { opacity: 1; transform: translateY(0); }
+    .mobile-menu.open a:nth-child(1) { transition-delay: 0.05s; }
+    .mobile-menu.open a:nth-child(2) { transition-delay: 0.1s; }
+    .mobile-menu.open a:nth-child(3) { transition-delay: 0.15s; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--amber); }
+    @media (max-width: 600px) { .header-links.desktop { display: none; } .hamburger { display: flex; } }
+    .section-title { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: .75rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: .6rem; overflow: hidden; transition: transform .2s, border-color .2s; cursor: pointer; position: relative; }
+    .card:hover { transform: translateY(-2px); border-color: var(--border2); }
+    .card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: var(--surface2); }
+    .card-badge { position: absolute; top: .5rem; right: .5rem; background: var(--amber); color: var(--bg); font-size: .6rem; font-weight: 700; padding: .15rem .4rem; border-radius: .25rem; text-transform: uppercase; letter-spacing: .03em; }
+    .card-info { padding: .5rem; }
+    .card-title { font-size: .75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--white); }
+    .card-year { font-size: .65rem; color: var(--muted); margin-top: .15rem; }
+    .search-bar { display: flex; gap: .5rem; margin-bottom: 1rem; }
+    .search-bar input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: .5rem; padding: .6rem .75rem; color: var(--text); font-size: .85rem; outline: none; font-family: var(--font); }
+    .search-bar input:focus { border-color: var(--amber); }
+    .search-bar input::placeholder { color: var(--border2); }
+    .search-bar button { background: var(--amber); color: var(--bg); border: none; border-radius: .5rem; padding: .6rem 1rem; font-weight: 700; font-size: .85rem; cursor: pointer; font-family: var(--font); }
+    .search-bar button:hover { background: var(--amber-dim); }
+    .loading { text-align: center; padding: 2rem; color: var(--muted); }
+    .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--amber); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto .5rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { text-align: center; padding: 2rem; color: var(--muted); }
+    .tabs { display: flex; gap: .35rem; margin-bottom: .75rem; border-bottom: 1px solid var(--border); padding-bottom: .4rem; }
+    .tab { padding: .4rem .75rem; border-radius: .4rem; border: none; background: transparent; color: var(--muted); font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; font-family: var(--font); }
+    .tab:hover { color: var(--text); }
+    .tab.active { background: var(--amber); color: var(--bg); }
+    @media (max-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .5rem; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <a href="/" class="logo-wrap"><img src="/LeLibrary.png" alt="LeLibrary" onerror="this.style.display='none'" /><span>LeLibrary</span></a>
+    <div class="header-links desktop">
+      <a href="/">Addon</a>
+      <a href="/configure">Configure</a>
+      <a href="/my-library">My Library</a>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/">Addon</a>
+      <a href="/configure">Configure</a>
+      <a href="/my-library">My Library</a>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search movies & series..." onkeydown="if(event.key==='Enter')doSearch()" />
+    <button onclick="doSearch()">Search</button>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="switchTab('trending', this)">Trending</button>
+    <button class="tab" onclick="switchTab('popular', this)">Popular</button>
+    <button class="tab" onclick="switchTab('upcoming', this)">Upcoming</button>
+  </div>
+
+  <div id="content">
+    <div class="loading" id="loadingScreen"><div class="spinner"></div><p>Loading from TMDB...</p></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<script>
+const TMDB_API = '/api/tmdb';
+const TMDB_KEY = localStorage.getItem('lelibrary_tmdb_key') || '';
+const TORBOX_KEY = localStorage.getItem('lelibrary_torbox_key') || '';
+let currentTab = 'trending';
+let allItems = [];
+let torboxTitles = new Set();
+
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+async function tmdbGet(path) {
+  if (!TMDB_KEY) throw new Error('TMDB API key required — add it in Configure');
+  const res = await fetch(`${TMDB_API}${path}`, { headers: { 'Authorization': `Bearer ${TMDB_KEY}` } });
+  if (!res.ok) throw new Error(`TMDB error: ${res.status}`);
+  return res.json();
+}
+
+async function loadTorboxTitles() {
+  if (!TORBOX_KEY) return;
+  try {
+    const [torrents, usenet] = await Promise.allSettled([
+      fetch('/api/torbox/torrents/mylist', { headers: { 'Authorization': `Bearer ${TORBOX_KEY}` } }).then(r => r.json()),
+      fetch('/api/torbox/usenet/mylist', { headers: { 'Authorization': `Bearer ${TORBOX_KEY}` } }).then(r => r.json()),
+    ]);
+    const items = [
+      ...(torrents.status === 'fulfilled' ? (torrents.value.data || []) : []),
+      ...(usenet.status === 'fulfilled' ? (usenet.value.data || []) : []),
+    ];
+    items.forEach(i => {
+      const name = (i.name || i.filename || '').toLowerCase().replace(/\.[^.]+$/, '').replace(/\bS\d{1,2}E\d{1,2}\b/gi, '').replace(/\b(1080p|720p|2160p|4K|WEB-DL|BluRay|WEBRip|x264|x265|HEVC|AVC|DUAL|PT-BR|AAC|DDP5\.1|Atmos)\b/gi, '').replace(/[-.]/g, ' ').trim();
+      if (name.length > 3) torboxTitles.add(name);
+    });
+  } catch {}
+}
+
+function isInstant(title) {
+  const clean = title.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  for (const t of torboxTitles) {
+    if (clean.includes(t) || t.includes(clean)) return true;
+    if (clean.split(' ').filter(w => w.length > 3).some(w => t.includes(w))) return true;
+  }
+  return false;
+}
+
+async function loadTab(tab) {
+  document.getElementById('loadingScreen').style.display = 'block';
+  document.getElementById('grid').innerHTML = '';
+  try {
+    let data;
+    if (tab === 'trending') data = await tmdbGet('/trending/movie/week');
+    else if (tab === 'popular') data = await tmdbGet('/movie/popular');
+    else data = await tmdbGet('/movie/upcoming');
+    allItems = (data.results || []).filter(i => i.poster_path);
+    renderGrid(allItems);
+  } catch (err) {
+    document.getElementById('grid').innerHTML = `<div class="empty"><p>${err.message}</p></div>`;
+  } finally {
+    document.getElementById('loadingScreen').style.display = 'none';
+  }
+}
+
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  loadTab(tab);
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) { loadTab(currentTab); return; }
+  document.getElementById('loadingScreen').style.display = 'block';
+  document.getElementById('grid').innerHTML = '';
+  tmdbGet(`/search/multi?query=${encodeURIComponent(q)}&language=en-US`).then(data => {
+    allItems = (data.results || []).filter(i => i.poster_path && (i.media_type === 'movie' || i.media_type === 'tv'));
+    renderGrid(allItems);
+    document.getElementById('loadingScreen').style.display = 'none';
+  }).catch(err => {
+    document.getElementById('grid').innerHTML = `<div class="empty"><p>${err.message}</p></div>`;
+    document.getElementById('loadingScreen').style.display = 'none';
+  });
+}
+
+function renderGrid(items) {
+  if (!items.length) { document.getElementById('grid').innerHTML = '<div class="empty"><p>No results found</p></div>'; return; }
+  document.getElementById('grid').innerHTML = items.map(item => {
+    const title = item.title || item.name || 'Unknown';
+    const year = (item.release_date || item.first_air_date || '').split('-')[0] || '';
+    const poster = `https://image.tmdb.org/t/p/w342${item.poster_path}`;
+    const instant = isInstant(title);
+    return `
+      <div class="card">
+        ${instant ? '<div class="card-badge">⚡ Instant TB</div>' : ''}
+        <img class="card-poster" src="${poster}" alt="${title}" loading="lazy" onerror="this.style.display='none'" />
+        <div class="card-info">
+          <div class="card-title" title="${title}">${title}</div>
+          <div class="card-year">${year}${item.media_type === 'tv' ? ' · Series' : ''}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadTorboxTitles().then(() => loadTab('trending'));
+});
+</script>
+</body>
+</html>
