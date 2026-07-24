@@ -113,6 +113,16 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => c.name)
     : (detail.created_by || []).map(c => c.name);
 
+  // Nuvio cast with photos
+  const appExtras = {};
+  const richCast = (credits?.cast || []).slice(0, 50).map(c => ({
+    id: c.id,
+    name: c.name,
+    character: c.character || '',
+    photo: c.profile_path ? `${TMDB_IMAGE}/w185${c.profile_path}` : null,
+  }));
+  if (richCast.length > 0) appExtras.cast = richCast;
+
   let poster     = detail.poster_path   ? `${TMDB_IMAGE}/w500${detail.poster_path}`    : null;
   let background = detail.backdrop_path ? `${TMDB_IMAGE}/w1280${detail.backdrop_path}` : null;
   const langCode = lang.split('-')[0];
@@ -143,6 +153,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       released: detail.release_date ? new Date(detail.release_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
       links,
+      app_extras: Object.keys(appExtras).length > 0 ? appExtras : undefined,
     };
     tmdbCache.set(cacheKey, result);
     return result;
@@ -172,6 +183,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       imdbRating: detail.vote_average?.toFixed(1),
       videos,
       links,
+      app_extras: Object.keys(appExtras).length > 0 ? appExtras : undefined,
       status: detail.status,
     };
     tmdbCache.set(cacheKey, result);
