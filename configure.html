@@ -120,6 +120,10 @@
     .btn-web.show { display: flex; }
     .btn-web:hover { background: rgba(255,255,255,.08); border-color: #818cf8; transform: translateY(-1px); }
     .btn-web .icon { background: rgba(124,58,237,.2); }
+    .btn-nuvio { background: rgba(255,255,255,.04); color: var(--text); border: 1px solid var(--border); display: none; }
+    .btn-nuvio.show { display: flex; }
+    .btn-nuvio:hover { background: rgba(255,255,255,.08); border-color: #818cf8; transform: translateY(-1px); }
+    .btn-nuvio .icon { background: rgba(124,58,237,.2); }
     .url-row {
       display: none; background: rgba(0,0,0,.3); border: 1px solid var(--border);
       border-radius: .5rem; padding: .5rem .6rem; align-items: center; gap: .4rem;
@@ -332,6 +336,15 @@
       <span class="arr">›</span>
     </a>
 
+    <a class="btn-big btn-nuvio" id="btnNuvio" href="#" target="_blank" rel="noopener">
+      <div class="icon">📱</div>
+      <div class="label">
+        <span>Install on Nuvio</span>
+        <small>Opens Nuvio app and installs the addon</small>
+      </div>
+      <span class="arr">›</span>
+    </a>
+
     <div class="url-row" id="urlRow">
       <span id="manifestUrl"></span>
       <button class="btn-copy" onclick="copyUrl(this)">Copy</button>
@@ -418,13 +431,16 @@
     const manifestUrl = `${origin}/${encoded}/manifest.json`;
     const stremioDeep = manifestUrl.replace(/^https?:\/\//, 'stremio://');
     const stremioWeb  = `https://web.stremio.com/#?addon=${encodeURIComponent(manifestUrl)}`;
+    const nuvioDeep   = manifestUrl.replace(/^https?:\/\//, 'nuvio://');
 
     setTimeout(() => {
       document.getElementById('manifestUrl').textContent = manifestUrl;
       document.getElementById('btnDesktop').href = stremioDeep;
       document.getElementById('btnWeb').href = stremioWeb;
+      document.getElementById('btnNuvio').href = nuvioDeep;
       document.getElementById('btnDesktop').classList.add('show');
       document.getElementById('btnWeb').classList.add('show');
+      document.getElementById('btnNuvio').classList.add('show');
       document.getElementById('urlRow').classList.add('show');
       document.getElementById('secNote').style.display = 'block';
       btn.disabled = false;
@@ -467,6 +483,7 @@
     document.getElementById('rdCatalogField').style.display = 'none';
     document.getElementById('btnDesktop').classList.remove('show');
     document.getElementById('btnWeb').classList.remove('show');
+    document.getElementById('btnNuvio').classList.remove('show');
     document.getElementById('urlRow').classList.remove('show');
     document.getElementById('secNote').style.display = 'none';
     document.getElementById('manifestUrl').textContent = '';
@@ -484,6 +501,7 @@
       if (cfg.rdCatalog) document.getElementById('rdCatalog').value = cfg.rdCatalog;
       if (cfg.sortBy) document.getElementById('sortBy').value = cfg.sortBy;
       if (cfg.lang) document.getElementById('lang').value = cfg.lang;
+      setTimeout(() => generate(), 100);
     }
   });
 
