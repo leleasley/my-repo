@@ -55,12 +55,47 @@
     .logo-wrap { display: flex; align-items: center; gap: .5rem; text-decoration: none; }
     .logo-wrap img { width: 28px; height: 28px; border-radius: 6px; }
     .logo-wrap span { font-size: 1rem; font-weight: 700; color: var(--amber); }
-    .header-links { display: flex; gap: .75rem; }
+    .header-links { display: flex; gap: .75rem; align-items: center; }
     .header-links a {
       color: var(--muted); text-decoration: none; font-size: .78rem; font-weight: 500;
       transition: color .2s;
     }
     .header-links a:hover { color: var(--amber); }
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px; z-index: 101;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px; background: var(--text);
+      border-radius: 2px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      position: fixed; top: 52px; left: 0; right: 0;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      flex-direction: column; padding: 0 24px; z-index: 99;
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .mobile-menu.open { max-height: 300px; opacity: 1; padding: 12px 24px 16px; }
+    .mobile-menu a {
+      color: var(--muted); text-decoration: none; font-size: .85rem; font-weight: 500;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      opacity: 0; transform: translateY(-8px);
+      transition: opacity 0.25s ease, transform 0.25s ease, color 0.2s;
+    }
+    .mobile-menu.open a { opacity: 1; transform: translateY(0); }
+    .mobile-menu.open a:nth-child(1) { transition-delay: 0.05s; }
+    .mobile-menu.open a:nth-child(2) { transition-delay: 0.1s; }
+    .mobile-menu.open a:nth-child(3) { transition-delay: 0.15s; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--amber); }
+    @media (max-width: 600px) {
+      .header-links.desktop { display: none; }
+      .hamburger { display: flex; }
+    }
 
     /* Login Section */
     .login-section {
@@ -209,7 +244,14 @@
       <img src="/LeLibrary.png" alt="LeLibrary" onerror="this.style.display='none'" />
       <span>LeLibrary</span>
     </a>
-    <div class="header-links">
+    <div class="header-links desktop">
+      <a href="/">Addon</a>
+      <a href="/configure">Configure</a>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-menu" id="mobileMenu">
       <a href="/">Addon</a>
       <a href="/configure">Configure</a>
     </div>
@@ -515,6 +557,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLibrary();
   }
 });
+
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
 </script>
 </body>
 </html>

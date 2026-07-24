@@ -121,6 +121,7 @@
       border: none;
       cursor: pointer;
       padding: 4px;
+      z-index: 101;
     }
     .hamburger span {
       display: block;
@@ -128,32 +129,45 @@
       height: 2px;
       background: var(--text);
       border-radius: 2px;
-      transition: all 0.3s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: center;
     }
     .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     .mobile-menu {
-      display: none;
       position: fixed;
       top: 64px;
       left: 0; right: 0;
       background: var(--bg-raised);
       border-bottom: 1px solid var(--border);
       flex-direction: column;
-      padding: 16px 24px 24px;
+      padding: 0 24px;
       z-index: 99;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .mobile-menu.open { display: flex; }
+    .mobile-menu.open { max-height: 400px; opacity: 1; padding: 12px 24px 20px; }
     .mobile-menu a {
       color: var(--muted);
       text-decoration: none;
       font-size: 15px;
       font-weight: 500;
-      padding: 12px 0;
+      padding: 10px 0;
       border-bottom: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.25s ease, transform 0.25s ease, color 0.2s;
     }
+    .mobile-menu.open a { opacity: 1; transform: translateY(0); }
+    .mobile-menu.open a:nth-child(1) { transition-delay: 0.05s; }
+    .mobile-menu.open a:nth-child(2) { transition-delay: 0.1s; }
+    .mobile-menu.open a:nth-child(3) { transition-delay: 0.15s; }
+    .mobile-menu.open a:nth-child(4) { transition-delay: 0.2s; }
+    .mobile-menu.open a:nth-child(5) { transition-delay: 0.25s; }
     .mobile-menu a:last-child { border-bottom: none; }
     .mobile-menu a:hover { color: var(--white); }
     .mobile-menu .mob-cta {
