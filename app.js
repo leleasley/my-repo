@@ -350,7 +350,15 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
 
   let tmdbId;
   if (id.startsWith('torbox:')) {
-    tmdbId = id.split(':')[2];
+    const raw = id.split(':')[2];
+    if (raw.startsWith('tt')) {
+      const { imdbToTmdb } = require('./src/tmdb');
+      const mapped = await imdbToTmdb(tmdbApiKey, raw);
+      if (!mapped) return res.json({ meta: null });
+      tmdbId = String(mapped.tmdbId);
+    } else {
+      tmdbId = raw;
+    }
   } else if (id.startsWith('tt')) {
     const { imdbToTmdb } = require('./src/tmdb');
     const mapped = await imdbToTmdb(tmdbApiKey, id.split(':')[0]);
@@ -427,7 +435,15 @@ app.get('/:token/stream/:type/:id.json', async (req, res) => {
   try {
     if (id.startsWith('torbox:')) {
       const parts = id.split(':');
-      tmdbId  = parts[2];
+      const rawId = parts[2];
+      if (rawId.startsWith('tt')) {
+        const { imdbToTmdb } = require('./src/tmdb');
+        const mapped = await imdbToTmdb(tmdbApiKey, rawId);
+        if (!mapped) return res.json({ streams: [] });
+        tmdbId = String(mapped.tmdbId);
+      } else {
+        tmdbId = rawId;
+      }
       season  = parts[3];
       episode = parts[4];
     } else if (id.startsWith('tt')) {
