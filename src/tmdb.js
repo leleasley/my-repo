@@ -125,6 +125,10 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
                || vids.find(v => v.type === 'Trailer' && v.site === 'YouTube');
 
   if (type === 'movie') {
+    const links = imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [];
+    for (const n of (detail.networks || []).slice(0, 3)) links.push({ name: n.name, category: 'network', url: `https://www.themoviedb.org/movie/${tmdbId}` });
+    for (const c of (detail.production_companies || []).slice(0, 3)) links.push({ name: c.name, category: 'production', url: `https://www.themoviedb.org/movie/${tmdbId}` });
+
     const result = {
       id: `torbox:movie:${tmdbId}`, tmdbId, imdbId,
       type: 'movie',
@@ -138,7 +142,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       releaseInfo: detail.release_date?.split('-')[0],
       released: detail.release_date ? new Date(detail.release_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
-      links: imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [],
+      links,
     };
     tmdbCache.set(cacheKey, result);
     return result;
@@ -149,6 +153,10 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       episodeLists.push(await fetchSeasonVideos(auth, tmdbId, s, lang, poster));
     }
     const videos = episodeLists.flat();
+
+    const links = imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [];
+    for (const n of (detail.networks || []).slice(0, 3)) links.push({ name: n.name, category: 'network', url: `https://www.themoviedb.org/tv/${tmdbId}` });
+    for (const c of (detail.production_companies || []).slice(0, 3)) links.push({ name: c.name, category: 'production', url: `https://www.themoviedb.org/tv/${tmdbId}` });
 
     const result = {
       id: `torbox:series:${tmdbId}`, tmdbId, imdbId,
@@ -163,7 +171,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
       released: detail.first_air_date ? new Date(detail.first_air_date).toISOString() : undefined,
       imdbRating: detail.vote_average?.toFixed(1),
       videos,
-      links: imdbId ? [{ name: 'IMDB', category: 'imdb', url: `https://www.imdb.com/title/${imdbId}` }] : [],
+      links,
       status: detail.status,
     };
     tmdbCache.set(cacheKey, result);
