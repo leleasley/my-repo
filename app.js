@@ -151,7 +151,7 @@ function getBaseManifest(baseUrl) {
     logo: getLogoUrl(baseUrl),
     resources: ['catalog', 'meta', 'stream'],
     types: ['movie', 'series', 'anime'],
-    idPrefixes: ['torbox:', 'kitsu:'],
+    idPrefixes: ['torbox:', 'tt', 'kitsu:'],
     catalogs: [],
     behaviorHints: { configurable: true, configurationRequired: true },
     configureUrl: `${baseUrl}/configure`,
@@ -191,10 +191,10 @@ function getConfiguredManifest(baseUrl, config = {}) {
     resources: [
       'catalog',
       'meta',
-      { name: 'stream', types: ['movie', 'series', 'anime'], idPrefixes: ['torbox:', 'kitsu:'] },
+      { name: 'stream', types: ['movie', 'series', 'anime'], idPrefixes: ['torbox:', 'tt', 'kitsu:'] },
     ],
     types: ['movie', 'series', 'anime'],
-    idPrefixes: ['torbox:', 'kitsu:'],
+    idPrefixes: ['torbox:', 'tt', 'kitsu:'],
     catalogs,
     behaviorHints: { configurable: true },
   };
