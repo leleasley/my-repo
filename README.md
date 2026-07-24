@@ -53,7 +53,6 @@ Three catalogs appear in Stremio/Nuvio: **Movies**, **Series**, **Anime**.
 | **Real-Debrid** | Optional secondary source — merge or separate catalogs |
 | **Redis cache** | Persistent with auto-invalidation on new downloads |
 | **Background refresh** | Rebuilds catalog only when downloads change |
-| **Docker ready** | One command to deploy |
 
 ---
 
@@ -63,87 +62,116 @@ Three catalogs appear in Stremio/Nuvio: **Movies**, **Series**, **Anime**.
 
 [![Deploy with Vercel](https://camo.githubusercontent.com/7015516519ae874ab75537283bc75f86b3d46386ed994093a3790a1180913164/68747470733a2f2f76657263656c2e636f6d2f627574746f6e)](https://vercel.com/new/clone?repository-url=https://github.com/leleasley/my-repo)
 
-Set `REDIS_URL` for persistent cache. Your addon URL will be `https://your-project.vercel.app`.
+No configuration needed. Your addon URL will be `https://your-project.vercel.app`.
+
+Optional: set `REDIS_URL` as an environment variable in Vercel for persistent cache (e.g. from [Upstash](https://upstash.com)).
 
 ### Render (free)
 
-Fork → [render.com](https://render.com) → New Web Service → connect your repo.
+1. Fork this repo
+2. Go to [render.com](https://render.com) → **New Web Service**
+3. Connect your fork
+4. It will auto-detect the Dockerfile — just hit **Deploy**
 
 Your addon URL will be `https://your-project.onrender.com`.
 
-### Docker
+### Docker (self-hosted)
+
+**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+1. Clone the repo:
 
 ```bash
-docker compose up -d
+git clone https://github.com/leleasley/my-repo.git
+cd my-repo
 ```
 
-Or with `docker-compose.yml`:
+2. Copy the example env file and edit it:
 
-```yaml
-services:
-  lelibrary:
-    build: .
-    container_name: lelibrary
-    restart: unless-stopped
-    ports:
-      - "7860:7860"
-    environment:
-      - PORT=7860
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - redis
+```bash
+cp .env.example .env
+```
 
-  redis:
-    image: redis:7-alpine
-    container_name: lelibrary-redis
-    restart: unless-stopped
-    volumes:
-      - redis-data:/data
+The `.env` file looks like this — you can leave the defaults for local use:
 
-volumes:
-  redis-data:
+```
+PORT=7860
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
+
+3. Build and start:
+
+```bash
+docker compose up -d --build
+```
+
+4. Open the config page at `http://localhost:7860/configure` and enter your API keys.
+
+That's it. The addon is running at `http://localhost:7860`.
+
+**Useful commands:**
+
+```bash
+docker compose logs -f          # watch logs
+docker compose restart          # restart after changes
+docker compose down             # stop everything
+docker compose up -d --build    # rebuild after code changes
 ```
 
 ---
 
 ## Environment Variables
 
-| Variable | Default | What it does |
+All settings are optional — the addon works out of the box with defaults.
+
+| Variable | Default | Description |
 |---|---|---|
 | `PORT` | `7860` | Server port |
-| `CACHE_TTL_CATALOG` | `3600` | Catalog cache TTL (seconds) |
-| `CACHE_TTL_STREAM` | `21600` | Stream cache TTL (seconds) |
-| `REDIS_URL` | — | Full Redis URL (`redis://` or `rediss://`) |
-| `UPSTASH_REDIS_URL` | — | Alias for `REDIS_URL` |
-| `REDIS_HOST` | — | Redis host (alternative to URL) |
+| `CACHE_TTL_CATALOG` | `3600` | How long catalog data is cached (seconds) |
+| `CACHE_TTL_STREAM` | `21600` | How long stream data is cached (seconds) |
+| `REDIS_HOST` | — | Redis host (set to `redis` when using Docker Compose) |
 | `REDIS_PORT` | `6379` | Redis port |
-| `REDIS_PASSWORD` | — | Redis password |
-| `REDIS_TLS` | `false` | Enable TLS (auto-detected for `rediss://`) |
+| `REDIS_PASSWORD` | — | Redis password (if required) |
+| `REDIS_TLS` | `false` | Enable TLS for Redis connections |
+| `REDIS_URL` | — | Full Redis URL (alternative to individual `REDIS_*` vars) |
+| `UPSTASH_REDIS_URL` | — | Alias for `REDIS_URL` (Upstash compatibility) |
+
+**Vercel / Render users:** set these as environment variables in your dashboard. No `.env` file needed.
+
+**Docker users:** put them in the `.env` file in the project root.
 
 ---
 
 ## Cache Behavior
 
-| Data | TTL |
+| Data | Default TTL |
 |---|---|
 | Catalog | 1 hour |
 | Streams | 6 hours |
 | Metadata | 24 hours |
 | Download hash | 2 hours |
 
-**Auto-invalidation:** Every catalog request compares a hash of your downloads to the cached value. New files trigger an immediate rebuild.
+**Auto-invalidation:** On every catalog request, the addon compares a hash of your current downloads against the cached hash. If new files are detected, the catalog cache is invalidated and rebuilt immediately — no manual action needed.
 
 ---
 
 ## Troubleshooting
 
-**Empty catalog** → Check your API keys. Make sure downloads in TorBox are completed (`completed`, `seeding`, `cached`, `finalized`).
+**Empty catalog**
+Check that your API keys are correct. Make sure your TorBox downloads have finished — only `completed`, `seeding`, `cached`, or `finalized` downloads are shown.
 
-**Wrong episodes** → Hit `/cache/clear` to force a full rebuild.
+**Wrong episodes showing**
+Clear the cache by sending a POST request to `/cache/clear`, then reload your catalog in Stremio.
 
-**Streams missing** → TorBox links are signed and expire. Reopen the title to generate new ones. Supported formats: `.mkv`, `.mp4`, `.avi`, `.mov`, `.m4v`, `.ts`, `.wmv`, `.webm`.
+**Streams not appearing**
+TorBox stream links are signed and expire after a few hours. Close and reopen the title in Stremio to generate fresh links.
 
-**Anime in Series** → Detection uses TMDB — only titles with Japanese original language + Animation genre go to the Anime catalog.
+**Anime appearing in Series (or vice versa)**
+Anime detection uses TMDB — only titles with Japanese as the original language *and* the Animation genre are placed in the Anime catalog. If something seems off, it's how TMDB classifies the title.
+
+**Can't install the addon**
+Make sure you're using the full manifest URL from the config page. For Stremio Desktop, the URL must start with `stremio://`. For web, use the Stremio Web link.
 
 ---
 
