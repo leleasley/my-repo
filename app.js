@@ -202,6 +202,7 @@ function getConfiguredManifest(baseUrl, config = {}) {
 
 app.get('/', (req, res) => res.sendFile(path.join(ROOT_DIR, 'landing.html')));
 app.get('/configure', (req, res) => res.sendFile(path.join(ROOT_DIR, 'configure.html')));
+app.get('/my-library', (req, res) => res.sendFile(path.join(ROOT_DIR, 'public', 'my-library.html')));
 
 app.get('/:token/configure', (req, res) => {
   const config = decodeConfig(req.params.token);

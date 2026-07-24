@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
@@ -190,6 +190,7 @@
       width: 1px;
       background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
       pointer-events: none;
+      opacity: 0.3;
     }
     .hero::after {
       content: '';
@@ -199,6 +200,11 @@
       width: 1px;
       background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
       pointer-events: none;
+      opacity: 0.3;
+    }
+
+    @media (max-width: 800px) {
+      .hero::before, .hero::after { display: none; }
     }
 
     /* Grid dots background */
@@ -481,8 +487,36 @@
     }
 
     @media (max-width: 800px) {
-      .hero { min-height: auto; padding-bottom: 60px; }
-      .hero-right { display: none; }
+      .hero { min-height: auto; padding: 100px 20px 40px; }
+      .hero-inner { gap: 32px; }
+      .hero-right { display: block; width: 100%; overflow: hidden; }
+      .mockup-frame { width: 100%; }
+      .mockup-float-badge { top: -8px; right: 8px; padding: 6px 10px; font-size: 0.65rem; }
+      .features-section { overflow: hidden; }
+      .wide-card { overflow: hidden; }
+      .wide-card-visual { overflow: hidden; }
+      .stream-item { min-width: 0; }
+      .stream-name { white-space: normal; }
+      .steps-section { overflow: hidden; }
+    }
+
+    @media (max-width: 480px) {
+      .hero { padding: 90px 16px 32px; }
+      .hero-inner { gap: 24px; }
+      .hero-title { font-size: 2.2rem; }
+      .hero-desc { font-size: 0.92rem; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; justify-content: center; }
+      .hero-stats { gap: 16px; flex-wrap: wrap; }
+      .stat-value { font-size: 1rem; }
+      .mockup-float-badge { display: none; }
+      .mockup-body { padding: 14px; }
+      .mockup-poster { width: 60px; height: 90px; }
+      .feature-card { padding: 24px 20px; }
+      .wide-card { padding: 20px; gap: 20px; }
+      .section-heading { font-size: 1.8rem; margin-bottom: 32px; }
+      .step { padding: 0 8px; }
+      .marquee-item { font-size: 0.78rem; gap: 8px; }
     }
 
     /* ── MARQUEE ── */
@@ -569,7 +603,16 @@
       gap: 20px;
     }
 
-    @media (max-width: 800px) { .feature-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 800px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .features-section { padding: 60px 20px; }
+      .section-heading { margin-bottom: 36px; }
+    }
+
+    @media (max-width: 480px) {
+      .features-section { padding: 48px 16px; }
+      .feature-card { padding: 24px 20px; }
+    }
 
     .feature-card {
       background: var(--bg-card);
@@ -635,7 +678,11 @@
       align-items: center;
     }
 
-    @media (max-width: 700px) { .wide-card { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) {
+      .wide-card { grid-template-columns: 1fr; padding: 24px; gap: 24px; }
+      .stream-item { flex-wrap: wrap; gap: 8px; }
+      .stream-size { width: 100%; text-align: right; }
+    }
 
     .wide-card-text h3 {
       font-size: 1.5rem;
@@ -746,7 +793,15 @@
       margin-top: 60px;
     }
 
-    @media (max-width: 700px) { .steps-grid { grid-template-columns: 1fr; gap: 40px; } }
+    @media (max-width: 700px) {
+      .steps-grid { grid-template-columns: 1fr; gap: 40px; }
+      .steps-section { padding: 60px 20px; }
+      .step { padding: 0; }
+    }
+
+    @media (max-width: 480px) {
+      .steps-section { padding: 48px 16px; }
+    }
 
     .step {
       padding: 0 32px;
@@ -875,6 +930,12 @@
     @media (max-width: 640px) {
       footer { flex-direction: column; text-align: center; }
     }
+
+    @media (max-width: 480px) {
+      .cta-section { padding: 60px 16px; }
+      .cta-actions { flex-direction: column; align-items: center; }
+      .cta-actions .btn { width: 100%; justify-content: center; max-width: 300px; }
+    }
   </style>
 </head>
 <body>
@@ -889,6 +950,7 @@
       <a href="#features">Features</a>
       <a href="#how">Setup</a>
       <a href="#streams">Streams</a>
+      <a href="/my-library">My Library</a>
       <a class="topbar-cta" href="/configure">Configure Addon</a>
     </nav>
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
@@ -898,6 +960,7 @@
       <a href="#features" onclick="toggleMenu()">Features</a>
       <a href="#how" onclick="toggleMenu()">Setup</a>
       <a href="#streams" onclick="toggleMenu()">Streams</a>
+      <a href="/my-library" onclick="toggleMenu()">My Library</a>
       <a class="mob-cta" href="/configure" onclick="toggleMenu()">Configure Addon</a>
     </div>
   </header>
@@ -907,7 +970,6 @@
     <div class="grid-bg"></div>
     <div class="hero-inner">
       <div class="hero-left">
-        <div class="badge"><span class="badge-dot"></span> Stremio &amp; Nuvio Addon</div>
         <h1 class="hero-title">Your TorBox library,<br><em>actually organized.</em></h1>
         <p class="hero-desc">LeLibrary pulls everything from your TorBox account — movies, series, anime — groups episodes together, and enriches it all with TMDB metadata. One addon, zero effort.</p>
         <div class="hero-actions">
@@ -1121,6 +1183,17 @@
       document.getElementById('hamburger').classList.toggle('open');
       document.getElementById('mobileMenu').classList.toggle('open');
     }
+
+    // Auto-reset zoom if user pinches out
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+        document.body.style.zoom = '1';
+      }
+      lastTouchEnd = now;
+    }, false);
 
     // ── MARQUEE ──
     (function() {

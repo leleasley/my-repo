@@ -2,169 +2,191 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LeLibrary — My Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
+  <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#09090b" />
+  <title>LeLibrary — My Library</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0f0f13; --card: #18181f; --border: #2a2a35;
-      --accent: #7c3aed; --accent-h: #6d28d9; --glow: rgba(124,58,237,0.35);
-      --text: #e8e8f0; --muted: #9090a8; --input-bg: #0f0f13;
-      --success: #22c55e; --error: #ef4444; --warning: #f59e0b;
+      --bg: #09090b;
+      --surface: #111114;
+      --surface2: #161619;
+      --border: #1e1e22;
+      --border2: #27272a;
+      --amber: #f59e0b;
+      --amber-dim: #b45309;
+      --amber-glow: rgba(245, 158, 11, 0.12);
+      --white: #fafafa;
+      --text: #d4d4d8;
+      --muted: #71717a;
+      --success: #22c55e;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --font: 'Space Grotesk', -apple-system, sans-serif;
+      --mono: 'DM Mono', 'Menlo', monospace;
     }
+    html, body { height: 100%; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: var(--font);
       background: var(--bg); color: var(--text);
-      min-height: 100vh; padding: 1.5rem;
+      min-height: 100%; padding: 1rem;
+      overflow-x: hidden;
     }
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,58,237,0.18) 0%, transparent 70%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 60%);
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245,158,11,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(245,158,11,0.04) 0%, transparent 60%);
     }
     .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
 
     /* Header */
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
-    .logo-wrap { display: flex; align-items: center; gap: .6rem; }
-    .logo-wrap img { width: 36px; height: 36px; border-radius: 8px; }
-    .logo-wrap h1 {
-      font-size: 1.3rem; font-weight: 700;
-      background: linear-gradient(135deg,#a78bfa,#818cf8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .75rem 0; margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
     }
+    .logo-wrap { display: flex; align-items: center; gap: .5rem; text-decoration: none; }
+    .logo-wrap img { width: 28px; height: 28px; border-radius: 6px; }
+    .logo-wrap span { font-size: 1rem; font-weight: 700; color: var(--amber); }
     .header-links { display: flex; gap: .75rem; }
     .header-links a {
-      color: var(--muted); text-decoration: none; font-size: .82rem; font-weight: 500;
+      color: var(--muted); text-decoration: none; font-size: .78rem; font-weight: 500;
       transition: color .2s;
     }
-    .header-links a:hover { color: var(--accent); }
+    .header-links a:hover { color: var(--amber); }
 
     /* Login Section */
     .login-section {
-      background: var(--card); border: 1px solid var(--border); border-radius: 1rem;
-      padding: 2rem; max-width: 480px; margin: 0 auto 2rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: .75rem; padding: 1.5rem; max-width: 420px; margin: 0 auto 1.5rem;
     }
-    .login-section h2 { font-size: 1.1rem; margin-bottom: .25rem; }
-    .login-section p { color: var(--muted); font-size: .82rem; margin-bottom: 1rem; }
-    .input-wrap { position: relative; margin-bottom: 1rem; }
+    .login-section h2 { font-size: 1rem; margin-bottom: .2rem; color: var(--white); }
+    .login-section p { color: var(--muted); font-size: .78rem; margin-bottom: .75rem; }
+    .input-wrap { position: relative; margin-bottom: .75rem; }
     .input-wrap input {
-      width: 100%; background: var(--input-bg); border: 1px solid var(--border);
-      border-radius: .5rem; padding: .7rem .9rem; padding-right: 2.8rem;
-      color: var(--text); font-size: .9rem; outline: none;
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: .5rem; padding: .6rem .75rem; padding-right: 2.5rem;
+      color: var(--text); font-size: .85rem; outline: none;
+      font-family: var(--mono);
       transition: border-color .2s, box-shadow .2s;
     }
-    .input-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--glow); }
+    .input-wrap input:focus { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber-glow); }
+    .input-wrap input::placeholder { color: var(--border2); }
     .toggle-btn {
-      position: absolute; right: .7rem; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.1rem;
+      position: absolute; right: .6rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem;
     }
     .toggle-btn:hover { color: var(--text); }
     .btn-load {
-      width: 100%; background: var(--accent); color: #fff; border: none;
-      border-radius: .5rem; padding: .7rem; font-size: .9rem; font-weight: 700;
+      width: 100%; background: var(--amber); color: var(--bg); border: none;
+      border-radius: .5rem; padding: .6rem; font-size: .85rem; font-weight: 700;
       cursor: pointer; transition: all .2s;
+      font-family: var(--font);
     }
-    .btn-load:hover { background: var(--accent-h); }
+    .btn-load:hover { background: var(--amber-dim); }
     .btn-load:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-load.loading { pointer-events: none; }
-    .btn-load.loading::after {
-      content: ' ⏳'; animation: pulse 1s infinite;
-    }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
-    .hint { font-size: .72rem; color: var(--muted); margin-top: .5rem; }
-    .hint a { color: #818cf8; text-decoration: none; }
+    .btn-load.loading { pointer-events: none; opacity: .7; }
+    .btn-load.loading::after { content: ' ⏳'; }
+    .hint { font-size: .7rem; color: var(--muted); margin-top: .5rem; }
+    .hint a { color: var(--amber); text-decoration: none; }
+    .hint a:hover { text-decoration: underline; }
 
     /* Error Display */
     .error-box {
-      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
-      border-radius: .75rem; padding: .8rem 1rem; margin-bottom: 1rem;
-      display: none; font-size: .85rem; color: #fca5a5;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: .6rem; padding: .65rem .85rem; margin-bottom: .75rem;
+      display: none; font-size: .8rem; color: #fca5a5;
     }
     .error-box.show { display: flex; align-items: flex-start; gap: .5rem; }
-    .error-box .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .error-box .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
     .error-box .msg { flex: 1; }
-    .error-box .retry { color: var(--accent); cursor: pointer; font-weight: 600; background: none; border: none; font-size: .85rem; }
+    .error-box .retry {
+      color: var(--amber); cursor: pointer; font-weight: 600;
+      background: none; border: none; font-size: .8rem;
+    }
     .error-box .retry:hover { text-decoration: underline; }
 
     /* Stats Bar */
-    .stats-bar {
-      display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;
-    }
+    .stats-bar { display: flex; gap: .5rem; margin-bottom: .75rem; flex-wrap: wrap; }
     .stat {
-      background: var(--card); border: 1px solid var(--border); border-radius: .75rem;
-      padding: .6rem 1rem; font-size: .82rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: .5rem;
+      padding: .4rem .75rem; font-size: .78rem;
     }
-    .stat .num { font-weight: 700; color: var(--accent); font-size: 1rem; }
+    .stat .num { font-weight: 700; color: var(--amber); }
     .stat .label { color: var(--muted); }
 
     /* Tabs */
     .tabs {
-      display: flex; gap: .5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border);
-      padding-bottom: .5rem;
+      display: flex; gap: .35rem; margin-bottom: .75rem; border-bottom: 1px solid var(--border);
+      padding-bottom: .4rem;
     }
     .tab {
-      padding: .5rem 1rem; border-radius: .5rem; border: none;
-      background: transparent; color: var(--muted); font-size: .85rem; font-weight: 600;
-      cursor: pointer; transition: all .2s;
+      padding: .4rem .75rem; border-radius: .4rem; border: none;
+      background: transparent; color: var(--muted); font-size: .78rem; font-weight: 600;
+      cursor: pointer; transition: all .2s; font-family: var(--font);
     }
     .tab:hover { color: var(--text); }
-    .tab.active { background: var(--accent); color: #fff; }
+    .tab.active { background: var(--amber); color: var(--bg); }
 
     /* Grid */
     .grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: .75rem;
     }
     .item {
-      background: var(--card); border: 1px solid var(--border); border-radius: .75rem;
-      overflow: hidden; transition: transform .2s, box-shadow .2s; cursor: default;
+      background: var(--surface); border: 1px solid var(--border); border-radius: .6rem;
+      overflow: hidden; transition: transform .2s, border-color .2s;
     }
-    .item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+    .item:hover { transform: translateY(-2px); border-color: var(--border2); }
     .item-poster {
-      width: 100%; aspect-ratio: 2/3; object-fit: cover;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      width: 100%; aspect-ratio: 2/3; display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; background: var(--surface2);
     }
-    .item-info { padding: .7rem; }
+    .item-info { padding: .6rem; }
     .item-title {
-      font-size: .82rem; font-weight: 600; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis; margin-bottom: .25rem;
+      font-size: .78rem; font-weight: 600; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; margin-bottom: .2rem; color: var(--white);
     }
-    .item-meta { font-size: .72rem; color: var(--muted); }
+    .item-meta { font-size: .68rem; color: var(--muted); }
     .item-state {
-      display: inline-block; padding: .15rem .4rem; border-radius: .25rem;
-      font-size: .65rem; font-weight: 600; margin-top: .3rem;
+      display: inline-block; padding: .1rem .35rem; border-radius: .2rem;
+      font-size: .6rem; font-weight: 600; margin-top: .25rem; text-transform: uppercase;
+      letter-spacing: .03em;
     }
-    .state-cached { background: rgba(34,197,94,0.15); color: var(--success); }
-    .state-completed { background: rgba(34,197,94,0.15); color: var(--success); }
-    .state-seeding { background: rgba(59,130,246,0.15); color: #60a5fa; }
-    .state-downloading { background: rgba(245,158,11,0.15); color: var(--warning); }
-    .state-checking { background: rgba(144,144,168,0.15); color: var(--muted); }
-    .state-error { background: rgba(239,68,68,0.15); color: var(--error); }
+    .state-cached { background: rgba(34,197,94,0.12); color: var(--success); }
+    .state-completed { background: rgba(34,197,94,0.12); color: var(--success); }
+    .state-seeding { background: rgba(96,165,250,0.12); color: #60a5fa; }
+    .state-downloading { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .state-checking { background: rgba(113,113,122,0.12); color: var(--muted); }
+    .state-error { background: rgba(239,68,68,0.12); color: var(--error); }
 
     /* Empty State */
-    .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
-    .empty .icon { font-size: 2.5rem; margin-bottom: .5rem; }
-    .empty h3 { font-size: 1rem; margin-bottom: .25rem; color: var(--text); }
-    .empty p { font-size: .85rem; }
+    .empty { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
+    .empty .icon { font-size: 2rem; margin-bottom: .5rem; }
+    .empty h3 { font-size: .9rem; margin-bottom: .2rem; color: var(--text); }
+    .empty p { font-size: .82rem; }
 
     /* Loading */
-    .loading-screen { text-align: center; padding: 3rem; color: var(--muted); }
+    .loading-screen { text-align: center; padding: 2.5rem; color: var(--muted); }
     .loading-screen .spinner {
-      width: 32px; height: 32px; border: 3px solid var(--border);
-      border-top-color: var(--accent); border-radius: 50%;
-      animation: spin .8s linear infinite; margin: 0 auto .75rem;
+      width: 28px; height: 28px; border: 2px solid var(--border);
+      border-top-color: var(--amber); border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 0 auto .5rem;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Toast */
     .toast {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
-      background: var(--card); border: 1px solid var(--success); border-radius: .5rem;
-      padding: .5rem .8rem; font-size: .82rem; color: var(--success);
+      position: fixed; bottom: 1rem; right: 1rem;
+      background: var(--surface); border: 1px solid var(--success); border-radius: .5rem;
+      padding: .45rem .7rem; font-size: .78rem; color: var(--success);
       opacity: 0; transform: translateY(8px); transition: all .25s;
       pointer-events: none; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,.4);
     }
@@ -172,28 +194,27 @@
 
     /* Responsive */
     @media (max-width: 600px) {
-      body { padding: .75rem; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .75rem; }
-      .stats-bar { gap: .5rem; }
-      .stat { padding: .4rem .75rem; }
-      .header { flex-direction: column; gap: .5rem; }
+      body { padding: .5rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .5rem; }
+      .stats-bar { gap: .35rem; }
+      .stat { padding: .35rem .6rem; font-size: .72rem; }
+      .header { flex-direction: column; gap: .35rem; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <div class="logo-wrap">
+    <a href="/" class="logo-wrap">
       <img src="/LeLibrary.png" alt="LeLibrary" onerror="this.style.display='none'" />
-      <h1>LeLibrary</h1>
-    </div>
+      <span>LeLibrary</span>
+    </a>
     <div class="header-links">
-      <a href="/">← Addon</a>
+      <a href="/">Addon</a>
       <a href="/configure">Configure</a>
     </div>
   </div>
 
-  <!-- Login -->
   <div class="login-section" id="loginSection">
     <h2>My Library</h2>
     <p>Enter your TorBox API key to browse your downloads. All requests go directly from your browser to TorBox — nothing is stored on any server.</p>
@@ -205,28 +226,24 @@
     <p class="hint">Get your key at <a href="https://torbox.app/settings/api" target="_blank">torbox.app/settings/api</a></p>
   </div>
 
-  <!-- Error -->
   <div class="error-box" id="errorBox">
     <span class="icon">⚠️</span>
     <span class="msg" id="errorMsg"></span>
     <button class="retry" onclick="loadLibrary()">Retry</button>
   </div>
 
-  <!-- Content (hidden until loaded) -->
   <div id="content" style="display:none">
     <div class="stats-bar" id="statsBar"></div>
     <div class="tabs" id="tabs"></div>
     <div class="grid" id="grid"></div>
   </div>
 
-  <!-- Empty state -->
   <div class="empty" id="emptyState" style="display:none">
     <div class="icon">📂</div>
     <h3>No downloads found</h3>
     <p>Add some content to your TorBox account to see it here.</p>
   </div>
 
-  <!-- Loading -->
   <div class="loading-screen" id="loadingScreen" style="display:none">
     <div class="spinner"></div>
     <p>Loading your library from TorBox...</p>
@@ -302,16 +319,13 @@ async function loadLibrary() {
       torboxGet('/usenet/mylist', apiKey),
     ]);
 
-    const torrentItems = torrents.status === 'fulfilled' ? torrents.value : [];
-    const usenetItems = usenet.status === 'fulfilled' ? usenet.value : [];
-
     if (torrents.status === 'rejected' && usenet.status === 'rejected') {
       throw new Error(`Failed to load library: ${torrents.reason?.message || usenet.reason?.message}`);
     }
 
     const items = [
-      ...torrents.value.map(i => ({ ...i, source: 'torrent' })),
-      ...usenet.value.map(i => ({ ...i, source: 'usenet' })),
+      ...(torrents.status === 'fulfilled' ? torrents.value.map(i => ({ ...i, source: 'torrent' })) : []),
+      ...(usenet.status === 'fulfilled' ? usenet.value.map(i => ({ ...i, source: 'usenet' })) : []),
     ];
 
     const completed = items.filter(i => {
@@ -358,16 +372,16 @@ function renderTabs(items) {
   const movies = items.filter(i => !isSeries(i.name || i.filename || ''));
   const series = items.filter(i => isSeries(i.name || i.filename || ''));
   document.getElementById('tabs').innerHTML = `
-    <button class="tab active" onclick="switchTab('all')">All (${items.length})</button>
-    <button class="tab" onclick="switchTab('movie')">Movies (${movies.length})</button>
-    <button class="tab" onclick="switchTab('series')">Series (${series.length})</button>
+    <button class="tab active" onclick="switchTab('all', this)">All (${items.length})</button>
+    <button class="tab" onclick="switchTab('movie', this)">Movies (${movies.length})</button>
+    <button class="tab" onclick="switchTab('series', this)">Series (${series.length})</button>
   `;
 }
 
-function switchTab(tab) {
+function switchTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  el.classList.add('active');
 
   const filtered = tab === 'all' ? allItems
     : tab === 'movie' ? allItems.filter(i => !isSeries(i.name || i.filename || ''))
@@ -393,9 +407,7 @@ function renderGrid(items) {
 
     return `
       <div class="item">
-        <div class="item-poster" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(135deg,#1a1a2e,#16213e)">
-          ${ext ? getExtIcon(ext) : '📄'}
-        </div>
+        <div class="item-poster">${ext ? getExtIcon(ext) : '📄'}</div>
         <div class="item-info">
           <div class="item-title" title="${name}">${name}</div>
           <div class="item-meta">${size}${source ? ' · ' + source : ''}</div>
@@ -427,7 +439,6 @@ function formatBytes(bytes) {
   return gb >= 1 ? `${gb.toFixed(1)} GB` : `${(bytes / 1024 / 1024).toFixed(0)} MB`;
 }
 
-// Restore API key from localStorage
 document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('lelibrary_torbox_key');
   if (saved) document.getElementById('apiKey').value = saved;
