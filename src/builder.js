@@ -83,7 +83,6 @@ async function matchItem(item, tmdbApiKey, type, lang) {
     console.log(`[TMDB] "${info.title}" → "${result.title || result.name}" (${result.id}) anime=${isAnime}`);
 
     const stremioType = type === 'anime' ? 'series' : type;
-    const tmdbType = stremioType === 'series' ? 'tv' : 'movie';
 
     // Fetch IMDB ID for Stremio catalog display
     const imdbId = await tmdbToImdb(tmdbApiKey, result.id, tmdbType);
