@@ -8,629 +8,1200 @@
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
   <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <meta name="theme-color" content="#0f0f13" />
+  <meta name="theme-color" content="#09090b" />
   <title>LeLibrary — Configure</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0f0f13; --card: #18181f; --border: #2a2a35;
-      --accent: #7c3aed; --accent-h: #6d28d9; --glow: rgba(124,58,237,0.35);
-      --text: #e8e8f0; --muted: #9090a8; --input-bg: #0f0f13;
-      --success: #22c55e; --error: #ef4444;
+      --bg: #09090b;
+      --surface: #111114;
+      --surface2: #161619;
+      --border: #1e1e22;
+      --border2: #27272a;
+      --amber: #f59e0b;
+      --amber-dim: #b45309;
+      --amber-glow: rgba(245, 158, 11, 0.12);
+      --white: #fafafa;
+      --text: #d4d4d8;
+      --muted: #71717a;
+      --success: #22c55e;
+      --error: #ef4444;
+      --font: 'Space Grotesk', -apple-system, sans-serif;
+      --mono: 'DM Mono', 'Menlo', monospace;
     }
-    html { height: 100%; }
+
+    html, body { height: 100%; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg); color: var(--text);
-      min-height: 100%; display: flex; align-items: center;
-      justify-content: center; padding: 1rem;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    body::before {
-      content: ''; position: fixed; inset: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,58,237,0.18) 0%, transparent 70%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 60%);
+
+    /* ── TOP BAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(16px, 4vw, 40px);
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
     }
-    .card {
-      background: var(--card); border: 1px solid var(--border); position: relative;
-      border-radius: 1rem; padding: 1.5rem; width: 100%; max-width: 440px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-      max-height: 100vh; overflow-y: auto;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--white);
     }
-    .top-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .25rem; }
-    .logo-wrap { display: flex; align-items: center; gap: .6rem; }
-    .logo-wrap img { width: 42px; height: 42px; border-radius: 50%; }
-    .logo-wrap h1 {
-      font-size: 1.15rem; font-weight: 700;
-      background: linear-gradient(135deg,#a78bfa,#818cf8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+
+    .brand img {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
     }
-    .reset-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted);
-      border-radius: .4rem; padding: .25rem .5rem; cursor: pointer; font-size: .7rem; font-weight: 600;
-      transition: all .2s; flex-shrink: 0;
+
+    .brand-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
     }
-    .reset-btn:hover { background: rgba(239,68,68,0.1); border-color: var(--error); color: var(--error); }
-    .subtitle { color: var(--muted); font-size: .78rem; margin-bottom: .75rem; line-height: 1.4; }
-    .divider { height: 1px; background: var(--border); margin: .75rem 0; }
-    .field { margin-bottom: .7rem; }
-    label {
-      display: flex; align-items: center; gap: .3rem;
-      font-size: .72rem; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .04em; margin-bottom: .3rem;
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
-    label .req { color: var(--accent); }
-    input[type="text"], input[type="password"], select {
-      width: 100%; background: var(--input-bg); border: 1px solid var(--border);
-      border-radius: .5rem; padding: .55rem .75rem; color: var(--text);
-      font-size: .85rem; outline: none; transition: border-color .2s, box-shadow .2s;
-      -webkit-appearance: none;
+
+    .topbar-link {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
     }
-    input:focus-visible, select:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px var(--glow); }
-    input.invalid { border-color: var(--error) !important; box-shadow: 0 0 0 2px rgba(239,68,68,.2) !important; }
-    select option { background: #1e1e2a; }
-    .field-hint { font-size: .68rem; color: var(--muted); margin-top: .2rem; line-height: 1.4; }
-    .field-hint a { color: #818cf8; text-decoration: none; }
+    .topbar-link:hover { color: var(--text); }
+
+    .reset-link {
+      font-size: 0.72rem;
+      color: var(--muted);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font);
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .reset-link:hover { border-color: var(--error); color: var(--error); }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 860px) {
+      .main { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* ── LEFT: FORM ── */
+    .form-area {
+      padding: clamp(24px, 4vw, 48px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .form-header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .form-header p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .form-header p strong { color: var(--text); font-weight: 600; }
+
+    /* Referral */
+    .referral {
+      background: var(--amber-glow);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .referral-text {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .referral-text strong {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .referral-text span {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .referral-code-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 10px;
+      border-radius: 6px;
+      flex: 0 0 auto;
+    }
+
+    .referral-code {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--amber);
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-copy-sm {
+      background: var(--amber);
+      border: none;
+      color: var(--bg);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-copy-sm:hover { opacity: 0.85; }
+    .btn-copy-sm.copied { background: var(--success); }
+
+    /* Sections */
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    .field-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field-label .req { color: var(--amber); font-size: 0.8rem; }
+
+    .field-label a {
+      margin-left: auto;
+      font-size: 0.68rem;
+      color: var(--amber);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .field-label a:hover { text-decoration: underline; }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .input-row input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: var(--mono);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-row input:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px var(--amber-glow);
+    }
+
+    .input-row input.invalid {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    .input-row input::placeholder { color: var(--border2); }
+
+    .btn-icon {
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-icon:hover { color: var(--text); border-color: var(--border2); }
+
+    .field-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .field-hint a {
+      color: var(--amber);
+      text-decoration: none;
+      font-weight: 500;
+    }
     .field-hint a:hover { text-decoration: underline; }
-    .input-wrap { position: relative; }
-    .input-wrap input { padding-right: 2.5rem; }
-    .toggle-btn {
-      position: absolute; right: .6rem; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem; padding: .2rem;
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
-    .toggle-btn:hover { color: var(--text); }
-    .field-torbox {
-      background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent);
-      border: 1px solid rgba(124,58,237,0.3);
-      padding: .7rem .85rem; border-radius: .75rem; margin-bottom: .7rem;
+
+    select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: var(--font);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
     }
-    .field-torbox label { color: #a78bfa; }
-    .field-torbox input { border-color: rgba(124,58,237,0.4); }
-    .field-torbox input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px var(--glow); }
-    .field-rd {
-      opacity: 0.7; transition: opacity .2s;
-      padding: .6rem .75rem; border-radius: .75rem; border: 1px dashed var(--border); background: rgba(0,0,0,0.15);
+    select:focus { border-color: var(--amber); }
+    select option { background: var(--surface2); }
+
+    /* RD Section */
+    .rd-section {
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      opacity: 0.6;
+      transition: all 0.25s;
     }
-    .field-rd:focus-within, .field-rd:hover { opacity: 1; border-style: solid; }
-    .field-rd input { background: rgba(0,0,0,0.3); }
-    .field-row { display: flex; gap: .6rem; }
-    .field-row .field { flex: 1; }
-    .steps { display: flex; flex-direction: column; gap: .5rem; margin-top: .75rem; }
-    .btn-big {
-      display: flex; align-items: center; gap: .6rem; padding: .65rem .8rem;
-      border-radius: .6rem; text-decoration: none; font-weight: 700; font-size: .85rem;
-      cursor: pointer; border: none; width: 100%; transition: all .2s;
+    .rd-section:focus-within,
+    .rd-section:hover { opacity: 1; border-style: solid; }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 8px;
     }
-    .btn-big:disabled { opacity: .6; cursor: not-allowed; transform: none !important; }
-    .btn-big .icon {
-      width: 34px; height: 34px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+
+    .btn-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      transition: all 0.2s;
+      font-family: var(--font);
+      text-decoration: none;
     }
-    .btn-big .label { flex: 1; text-align: left; }
-    .btn-big .label small { display: block; font-size: .66rem; font-weight: 400; opacity: .7; margin-top: 1px; }
-    .btn-big .arr { opacity: .6; font-size: 1rem; }
-    .btn-generate { background: var(--accent); color: #fff; }
-    .btn-generate:hover:not(:disabled) { background: var(--accent-h); box-shadow: 0 4px 20px var(--glow); transform: translateY(-1px); }
-    .btn-generate .icon { background: rgba(255,255,255,.15); }
-    .btn-desktop { background: linear-gradient(135deg,#7c3aed,#5b21b6); color: #fff; display: none; }
-    .btn-desktop.show { display: flex; }
-    .btn-desktop:hover { background: linear-gradient(135deg,#6d28d9,#4c1d95); box-shadow: 0 4px 20px var(--glow); transform: translateY(-1px); }
-    .btn-desktop .icon { background: rgba(255,255,255,.15); }
-    .btn-web { background: rgba(255,255,255,.04); color: var(--text); border: 1px solid var(--border); display: none; }
-    .btn-web.show { display: flex; }
-    .btn-web:hover { background: rgba(255,255,255,.08); border-color: #818cf8; transform: translateY(-1px); }
-    .btn-web .icon { background: rgba(124,58,237,.2); }
-    .btn-nuvio { background: rgba(255,255,255,.04); color: var(--text); border: 1px solid var(--border); display: none; }
-    .btn-nuvio.show { display: flex; }
-    .btn-nuvio:hover { background: rgba(255,255,255,.08); border-color: #818cf8; transform: translateY(-1px); }
-    .btn-nuvio .icon { background: rgba(124,58,237,.2); }
-    .url-row {
-      display: none; background: rgba(0,0,0,.3); border: 1px solid var(--border);
-      border-radius: .5rem; padding: .5rem .6rem; align-items: center; gap: .4rem;
+
+    .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-main .ico {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
     }
-    .url-row.show { display: flex; }
-    .url-row span {
-      flex: 1; font-family: 'Menlo','Consolas',monospace; font-size: .65rem;
-      color: #a78bfa; word-break: break-all;
+
+    .btn-main .txt { flex: 1; text-align: left; }
+    .btn-main .txt small { display: block; font-size: 0.68rem; font-weight: 400; opacity: 0.7; margin-top: 2px; }
+    .btn-main .arr { opacity: 0.5; font-size: 1.1rem; }
+
+    .btn-gen {
+      background: var(--amber);
+      color: var(--bg);
     }
-    .btn-copy {
-      background: none; border: 1px solid var(--border); border-radius: .3rem;
-      color: var(--muted); cursor: pointer; padding: .3rem .45rem; font-size: .72rem;
-      transition: all .2s; white-space: nowrap; flex-shrink: 0; min-width: 3.5rem;
+    .btn-gen:hover:not(:disabled) {
+      background: var(--amber-dim);
+      box-shadow: 0 4px 24px rgba(245, 158, 11, 0.3);
+      transform: translateY(-1px);
     }
-    .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-copy.copied { border-color: var(--success); color: var(--success); }
-    .security-note { font-size: .66rem; color: var(--muted); text-align: center; line-height: 1.4; display: none; margin-top: .25rem; }
+    .btn-gen .ico { background: rgba(0, 0, 0, 0.15); }
+
+    .btn-stremio {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      color: var(--bg);
+      display: none;
+    }
+    .btn-stremio.show { display: flex; }
+    .btn-stremio:hover { box-shadow: 0 4px 24px rgba(245, 158, 11, 0.3); transform: translateY(-1px); }
+    .btn-stremio .ico { background: rgba(0, 0, 0, 0.12); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: none;
+    }
+    .btn-outline.show { display: flex; }
+    .btn-outline:hover { border-color: var(--amber); background: var(--amber-glow); transform: translateY(-1px); }
+    .btn-outline .ico { background: var(--amber-glow); }
+
+    .url-box {
+      display: none;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      align-items: center;
+      gap: 10px;
+    }
+    .url-box.show { display: flex; }
+
+    .url-box span {
+      flex: 1;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--amber);
+      word-break: break-all;
+    }
+
+    .btn-copy-url {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 5px 12px;
+      font-size: 0.72rem;
+      font-family: var(--font);
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-copy-url:hover { border-color: var(--amber); color: var(--amber); }
+    .btn-copy-url.copied { border-color: var(--success); color: var(--success); }
+
+    .security-note {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-align: center;
+      display: none;
+      margin-top: 4px;
+    }
+
+    /* Preview */
+    .preview-wrap {
+      margin-top: 8px;
+    }
+
+    .preview-btn {
+      width: 100%;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .preview-btn:hover { border-color: var(--amber); color: var(--text); }
+    .preview-btn .arr { transition: transform 0.25s; }
+    .preview-btn.open .arr { transform: rotate(90deg); }
+
+    .preview-panel {
+      display: none;
+      margin-top: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .preview-panel.open { display: block; }
+
+    .preview-head {
+      padding: 8px 14px;
+      background: var(--amber-glow);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    .stream-row {
+      display: flex;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .stream-row:last-child { border-bottom: none; }
+
+    .stream-label {
+      min-width: 100px;
+      max-width: 100px;
+      font-size: 0.65rem;
+      line-height: 1.5;
+      white-space: pre-line;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .stream-detail {
+      flex: 1;
+      font-size: 0.62rem;
+      line-height: 1.6;
+      white-space: pre-line;
+      color: var(--muted);
+    }
+
+    .preview-footer {
+      padding: 6px 14px;
+      font-size: 0.6rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Footer */
+    .form-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .form-footer p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .form-footer a { color: var(--amber); text-decoration: none; font-weight: 600; }
+    .form-footer a:hover { text-decoration: underline; }
+
+    .gh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .gh-btn:hover { border-color: var(--amber); }
+
+    .gh-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .gh-star {
+      color: var(--amber);
+      font-size: 0.85rem;
+    }
+
+    .copyright {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      padding: 32px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-section h3 {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .info-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .info-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .info-card p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .info-card p a { color: var(--amber); text-decoration: none; font-weight: 500; }
+
+    .info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .info-list li {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .info-list li::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--amber);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .stream-demo {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .stream-demo-row {
+      display: flex;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .stream-demo-row:last-child { border-bottom: none; }
+
+    .stream-demo-label {
+      min-width: 70px;
+      max-width: 70px;
+      font-size: 0.62rem;
+      line-height: 1.4;
+      white-space: pre-line;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .stream-demo-info {
+      flex: 1;
+      font-size: 0.6rem;
+      line-height: 1.5;
+      white-space: pre-line;
+      color: var(--muted);
+    }
+
+    /* Toast */
     .toast {
-      position: fixed; bottom: 1rem; right: 1rem;
-      background: var(--card); border: 1px solid var(--success); border-radius: .5rem;
-      padding: .5rem .8rem; font-size: .82rem; color: var(--success);
-      opacity: 0; transform: translateY(8px); transition: all .25s;
-      pointer-events: none; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--success);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      color: var(--success);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.25s;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
     .toast.show { opacity: 1; transform: translateY(0); }
 
-    /* ── Referral (compact) ────────────────────────────────────────── */
-    .referral-box {
-      background: linear-gradient(135deg, rgba(124,58,237,.12), rgba(88,28,135,.15));
-      border: 1px solid rgba(124,58,237,0.35);
-      border-radius: .75rem; padding: .7rem .85rem; margin-bottom: .75rem;
+    @media (max-width: 860px) {
+      .topbar-right .topbar-link { display: none; }
     }
-    .referral-row { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
-    .referral-title { font-weight: 700; font-size: .82rem; color: #fff; }
-    .referral-desc { font-size: .75rem; color: var(--muted); flex: 1; line-height: 1.3; min-width: 180px; }
-    .referral-code-row {
-      display: flex; align-items: center; gap: .4rem; background: rgba(0,0,0,.35);
-      padding: .35rem .55rem; border-radius: .4rem; flex: 1; min-width: 200px;
-    }
-    .referral-label { font-size: .7rem; color: var(--muted); font-weight: 600; flex-shrink: 0; }
-    .referral-code {
-      font-family: 'Menlo','Consolas',monospace; font-size: .65rem; color: #c4b5fd;
-      flex: 1; min-width: 0; word-break: break-all;
-    }
-    .btn-copy-ref {
-      background: var(--accent); border: none; border-radius: .3rem; color: #fff;
-      cursor: pointer; padding: .25rem .45rem; font-size: .7rem; font-weight: 600;
-      transition: all .2s; white-space: nowrap; flex-shrink: 0;
-    }
-    .btn-copy-ref:hover { background: var(--accent-h); transform: translateY(-1px); }
-    .btn-copy-ref.copied { background: var(--success); }
 
-    /* ── Preview (collapsible) ─────────────────────────────────────── */
-    .preview-toggle {
-      width: 100%; background: none; border: 1px solid var(--border); border-radius: .5rem; padding: .5rem .75rem;
-      color: var(--muted); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
-      cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: border-color .2s, color .2s;
-    }
-    .preview-toggle:hover { border-color: var(--accent); color: var(--text); }
-    .preview-toggle .arr { transition: transform .25s; }
-    .preview-toggle.open .arr { transform: rotate(90deg); }
-    .preview-body {
-      display: none; margin-top: .5rem; background: #0a0a10;
-      border: 1px solid var(--border); border-radius: .6rem; overflow: hidden;
-    }
-    .preview-body.open { display: block; }
-    .preview-header {
-      padding: .4rem .7rem; background: rgba(124,58,237,.08);
-      border-bottom: 1px solid var(--border); font-size: .65rem; color: var(--muted);
-    }
-    .stream-card { display: flex; gap: .6rem; padding: .5rem .7rem; border-bottom: 1px solid rgba(255,255,255,.04); }
-    .stream-card:last-child { border-bottom: none; }
-    .stream-name { min-width: 90px; max-width: 90px; font-size: .65rem; line-height: 1.45; white-space: pre-line; color: var(--text); font-weight: 600; }
-    .stream-desc { flex: 1; font-size: .6rem; line-height: 1.5; white-space: pre-line; color: var(--muted); }
-    .preview-note { padding: .35rem .7rem; font-size: .6rem; color: var(--muted); border-top: 1px solid var(--border); text-align: center; background: rgba(0,0,0,.2); }
-
-    /* ── Self-host (compact) ──────────────────────────────────────── */
-    .self-host-box { text-align: center; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--border); }
-    .self-host-box p { font-size: .75rem; color: var(--muted); margin-bottom: .5rem; }
-    .self-host-box p a { color: #a78bfa; text-decoration: none; font-weight: 600; }
-    .self-host-box p a:hover { text-decoration: underline; }
-    .gh-link {
-      display: inline-flex; align-items: center; gap: .4rem; background: #1e1e24; border: 1px solid #333;
-      color: #fff; padding: .4rem .8rem; border-radius: .4rem; font-size: .72rem; font-weight: 600;
-      text-decoration: none; transition: all .2s;
-    }
-    .gh-link:hover { background: #2a2a32; border-color: #555; }
-    .footer { text-align: center; margin-top: .6rem; font-size: .68rem; color: var(--muted); }
-
-    /* ── Mobile ────────────────────────────────────────────────────── */
     @media (max-width: 480px) {
-      body { padding: .5rem; }
-      .card { padding: 1rem; border-radius: .85rem; }
-      .field-row { flex-direction: column; gap: 0; }
-    }
-    @media (min-height: 700px) {
-      body { align-items: center; }
-    }
-    @media (max-height: 600px) {
-      .card { max-height: none; }
+      .field-row { grid-template-columns: 1fr; }
+      .referral { flex-direction: column; align-items: stretch; }
+      .referral-code-wrap { justify-content: space-between; }
     }
   </style>
 </head>
 <body>
-<div class="card">
-  <div class="top-row">
-    <div class="logo-wrap">
+
+  <header class="topbar">
+    <a href="/" class="brand">
       <img src="/LeLibrary.png" alt="LeLibrary" onerror="this.style.display='none'" />
-      <h1>LeLibrary</h1>
-    </div>
-    <button class="reset-btn" type="button" onclick="resetForm()">↺ Reset</button>
-  </div>
-  <p class="subtitle">Configure your API keys to display the TorBox catalog in Stremio.</p>
-
-  <div class="referral-box">
-    <div class="referral-row">
-      <span class="referral-title">💜 Don't have TorBox?</span>
-      <span class="referral-desc">Subscribe below for the best speed and support the project:</span>
-    </div>
-    <div class="referral-code-row">
-      <span class="referral-label">Code:</span>
-      <span class="referral-code" id="refCode">fba69dd3-9611-4e43-a505-87190b4db7fb</span>
-      <button class="btn-copy-ref" onclick="copyRef(this)">Copy</button>
-    </div>
-  </div>
-
-  <div class="field field-torbox">
-    <label for="torboxApiKey">TorBox API Key <span class="req">*</span></label>
-    <div class="input-wrap">
-      <input type="password" id="torboxApiKey" placeholder="tb-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <button class="toggle-btn" type="button" onclick="toggleVis('torboxApiKey',this)" aria-label="Show/hide key">👁</button>
-    </div>
-    <p class="field-hint">Don't have one? <a href="https://torbox.app/settings/api" target="_blank">Get TorBox API Key →</a></p>
-  </div>
-
-  <div class="field">
-    <label for="tmdbApiKey">TMDB API Key <span class="req">*</span></label>
-    <div class="input-wrap">
-      <input type="password" id="tmdbApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <button class="toggle-btn" type="button" onclick="toggleVis('tmdbApiKey',this)" aria-label="Show/hide key">👁</button>
-    </div>
-    <p class="field-hint">Get it at <a href="https://www.themoviedb.org/settings/api" target="_blank">themoviedb.org/settings/api</a> → copy <strong style="color:var(--text)">API Key (v3)</strong></p>
-  </div>
-
-  <div class="field-row">
-    <div class="field">
-      <label for="lang">Language</label>
-      <select id="lang">
-        <option value="en-US" selected>🇺🇸 English</option>
-        <option value="pt-BR">🇧🇷 PT-BR</option>
-        <option value="pt-PT">🇵🇹 PT-PT</option>
-        <option value="es-ES">🇪🇸 Español</option>
-        <option value="fr-FR">🇫🇷 Français</option>
-        <option value="de-DE">🇩🇪 Deutsch</option>
-        <option value="it-IT">🇮🇹 Italiano</option>
-        <option value="ja-JP">🇯🇵 日本語</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="sortBy">Sort by</label>
-      <select id="sortBy">
-        <option value="data_adicao">📅 Date added</option>
-        <option value="data_lancamento">🎬 Release date</option>
-        <option value="titulo">🔤 Title (A–Z)</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="field field-rd">
-    <label for="rdApiKey">Real-Debrid Key <span style="color:var(--muted);text-transform:none;font-size:.68rem;letter-spacing:0">(optional)</span></label>
-    <div class="input-wrap">
-      <input type="password" id="rdApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" oninput="toggleRdCatalog()" />
-      <button class="toggle-btn" type="button" onclick="toggleVis('rdApiKey',this)" aria-label="Show/hide key">👁</button>
-    </div>
-  </div>
-
-  <div class="field" id="rdCatalogField" style="display:none">
-    <label for="rdCatalog">Real-Debrid Catalog</label>
-    <select id="rdCatalog">
-      <option value="merge">🔀 Merge with TorBox</option>
-      <option value="separate">📂 Separate catalogs</option>
-    </select>
-  </div>
-
-  <div class="steps">
-    <button class="btn-big btn-generate" id="btnGenerate" onclick="generate()">
-      <div class="icon">⚡</div>
-      <div class="label">
-        <span id="genBtnTitle">Generate install links</span>
-        <small>Click to create the links with your keys</small>
-      </div>
-      <span class="arr">›</span>
-    </button>
-
-    <a class="btn-big btn-desktop" id="btnDesktop" href="#">
-      <div class="icon"><img src="/stremio.svg" alt="Stremio" style="width:22px;height:22px" /></div>
-      <div class="label">
-        <span>Install on Stremio (Desktop / Mobile)</span>
-        <small>Opens the app and installs the addon</small>
-      </div>
-      <span class="arr">›</span>
+      <span class="brand-name">LeLibrary</span>
     </a>
+    <div class="topbar-right">
+      <a href="/" class="topbar-link">Home</a>
+      <a href="https://github.com/leleasley/my-repo" target="_blank" class="topbar-link" style="display:flex;align-items:center;gap:6px;">
+        <svg class="gh-icon" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <button class="reset-link" type="button" onclick="resetForm()">Reset</button>
+    </div>
+  </header>
 
-    <a class="btn-big btn-web" id="btnWeb" href="#" target="_blank" rel="noopener">
-      <div class="icon"><img src="/stremio.svg" alt="Stremio" style="width:22px;height:22px" /></div>
-      <div class="label">
-        <span>Install via Stremio Web</span>
-        <small>Use at web.stremio.com in the browser</small>
+  <div class="main">
+    <!-- LEFT: FORM -->
+    <div class="form-area">
+      <div class="form-header">
+        <h1>Set up your addon</h1>
+        <p>Enter your API keys below. Your keys are <strong>encoded in the URL</strong> — nothing is stored on the server.</p>
       </div>
-      <span class="arr">›</span>
-    </a>
 
-    <a class="btn-big btn-nuvio" id="btnNuvio" href="#" target="_blank" rel="noopener">
-      <div class="icon"><img src="/nuvio.png" alt="Nuvio" style="width:22px;height:22px" /></div>
-      <div class="label">
-        <span>Install on Nuvio</span>
-        <small>Opens Nuvio app and installs the addon</small>
+      <div class="referral">
+        <div class="referral-text">
+          <strong>Need a TorBox account?</strong>
+          <span>Subscribe for the best speed and support the project:</span>
+        </div>
+        <div class="referral-code-wrap">
+          <span class="referral-code" id="refCode">fba69dd3-9611-4e43-a505-87190b4db7fb</span>
+          <button class="btn-copy-sm" onclick="copyRef(this)">Copy</button>
+        </div>
       </div>
-      <span class="arr">›</span>
-    </a>
 
-    <div class="url-row" id="urlRow">
-      <span id="manifestUrl"></span>
-      <button class="btn-copy" onclick="copyUrl(this)">Copy</button>
+      <!-- API Keys -->
+      <div class="form-section">
+        <div class="section-title">API Keys</div>
+
+        <div class="field">
+          <div class="field-label">
+            TorBox API Key <span class="req">*</span>
+            <a href="https://torbox.app/settings/api" target="_blank">Get key →</a>
+          </div>
+          <div class="input-row">
+            <input type="password" id="torboxApiKey" placeholder="tb-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+            <button class="btn-icon" type="button" onclick="toggleVis('torboxApiKey',this)" aria-label="Show/hide">👁</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            TMDB API Key <span class="req">*</span>
+            <a href="https://www.themoviedb.org/settings/api" target="_blank">Get key →</a>
+          </div>
+          <div class="input-row">
+            <input type="password" id="tmdbApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+            <button class="btn-icon" type="button" onclick="toggleVis('tmdbApiKey',this)" aria-label="Show/hide">👁</button>
+          </div>
+          <p class="field-hint">Copy <strong style="color:var(--text)">API Key (v3)</strong> from your TMDB account settings.</p>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="form-section">
+        <div class="section-title">Preferences</div>
+        <div class="field-row">
+          <div class="field">
+            <div class="field-label">Language</div>
+            <select id="lang">
+              <option value="en-US" selected>English</option>
+              <option value="pt-BR">PT-BR</option>
+              <option value="pt-PT">PT-PT</option>
+              <option value="es-ES">Espanol</option>
+              <option value="fr-FR">Francais</option>
+              <option value="de-DE">Deutsch</option>
+              <option value="it-IT">Italiano</option>
+              <option value="ja-JP">Japanese</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="field-label">Sort by</div>
+            <select id="sortBy">
+              <option value="data_adicao">Date added</option>
+              <option value="data_lancamento">Release date</option>
+              <option value="titulo">Title (A-Z)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Debrid -->
+      <div class="form-section">
+        <div class="section-title">Real-Debrid (optional)</div>
+        <div class="rd-section">
+          <div class="field">
+            <div class="field-label">Real-Debrid Key</div>
+            <div class="input-row">
+              <input type="password" id="rdApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" oninput="toggleRdCatalog()" />
+              <button class="btn-icon" type="button" onclick="toggleVis('rdApiKey',this)" aria-label="Show/hide">👁</button>
+            </div>
+          </div>
+          <div class="field" id="rdCatalogField" style="display:none; margin-top: 12px;">
+            <div class="field-label">Catalog mode</div>
+            <select id="rdCatalog">
+              <option value="merge">Merge with TorBox</option>
+              <option value="separate">Separate catalogs</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn-main btn-gen" id="btnGenerate" onclick="generate()">
+          <div class="ico">⚡</div>
+          <div class="txt">
+            <span id="genBtnTitle">Generate install links</span>
+            <small>Create links with your keys</small>
+          </div>
+          <span class="arr">›</span>
+        </button>
+
+        <a class="btn-main btn-stremio" id="btnDesktop" href="#">
+          <div class="ico"><img src="/stremio.svg" alt="Stremio" style="width:20px;height:20px" /></div>
+          <div class="txt">
+            <span>Install on Stremio (Desktop / Mobile)</span>
+            <small>Opens the app and installs the addon</small>
+          </div>
+          <span class="arr">›</span>
+        </a>
+
+        <a class="btn-main btn-outline" id="btnWeb" href="#" target="_blank" rel="noopener">
+          <div class="ico"><img src="/stremio.svg" alt="Stremio" style="width:20px;height:20px" /></div>
+          <div class="txt">
+            <span>Install via Stremio Web</span>
+            <small>Use at web.stremio.com in the browser</small>
+          </div>
+          <span class="arr">›</span>
+        </a>
+
+        <a class="btn-main btn-outline" id="btnNuvio" href="#" target="_blank" rel="noopener">
+          <div class="ico"><img src="/nuvio.png" alt="Nuvio" style="width:20px;height:20px" /></div>
+          <div class="txt">
+            <span>Install on Nuvio</span>
+            <small>Opens Nuvio app and installs the addon</small>
+          </div>
+          <span class="arr">›</span>
+        </a>
+
+        <div class="url-box" id="urlRow">
+          <span id="manifestUrl"></span>
+          <button class="btn-copy-url" onclick="copyUrl(this)">Copy</button>
+        </div>
+
+        <p class="security-note" id="secNote">Your keys are encoded in the URL and never touch the server.</p>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-wrap">
+        <button class="preview-btn" id="previewToggle" onclick="togglePreview()">
+          <span>Streams Preview</span>
+          <span class="arr">›</span>
+        </button>
+        <div class="preview-panel" id="previewBody">
+          <div class="preview-head">Example of how streams appear in Stremio</div>
+          <div id="previewCards"></div>
+          <div class="preview-footer">Actual streams depend on the files in your TorBox / Real-Debrid account</div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="form-footer">
+        <p>Want maximum speed and privacy? <a href="https://github.com/leleasley/my-repo" target="_blank">Self-host this addon</a></p>
+        <a href="https://github.com/leleasley/my-repo" target="_blank" class="gh-btn"><span class="gh-star">★</span> Star on GitHub</a>
+        <div class="copyright">LeLibrary &middot; Stremio + TorBox + TMDB</div>
+      </div>
     </div>
 
-    <p class="security-note" id="secNote">🔒 Your keys are encoded in the URL and are not stored on the server.</p>
+    <!-- RIGHT: SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>How it works</h3>
+        <div class="info-card">
+          <h4>What LeLibrary does</h4>
+          <p>Reads your TorBox downloads, groups episodes into series, fetches TMDB metadata, and serves it all as a Stremio/Nuvio addon.</p>
+          <ul class="info-list">
+            <li>Movies, Series, and Anime — three separate catalogs</li>
+            <li>Auto-detected anime via TMDB (Japanese + Animation)</li>
+            <li>Rich stream info: quality, codec, HDR, audio, size</li>
+            <li>Direct playback from TorBox CDN</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Stream format</h3>
+        <div class="stream-demo">
+          <div class="stream-demo-row">
+            <div class="stream-demo-label">⚡ TorBox ⚡
+🟣 4K · BluRay
+⭐ DV</div>
+            <div class="stream-demo-info">💾 62.40 GB   ⚙️ HEVC
+🔊 TrueHD Atmos · 7.1
+🫟 GROUP
+✔️ Dune.Part.Two.2024.UHD.BluRay.Remux</div>
+          </div>
+          <div class="stream-demo-row">
+            <div class="stream-demo-label">⚡ TorBox ⚡
+🔵 FHD · WEB-DL</div>
+            <div class="stream-demo-info">💾 14.20 GB   ⚙️ HEVC
+🔊 DD+ Atmos · 5.1
+✔️ Dune.Part.Two.2024.1080p.WEB-DL</div>
+          </div>
+          <div class="stream-demo-row">
+            <div class="stream-demo-label">🔴 RD ⚡
+🟢 HD · WEBRip</div>
+            <div class="stream-demo-info">💾 4.80 GB   ⚙️ AVC
+🔊 DTS · 5.1
+✔️ Game.of.Thrones.S01E01.720p.WEBRip</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Requirements</h3>
+        <div class="info-card">
+          <ul class="info-list">
+            <li>A TorBox account with completed downloads</li>
+            <li>A free TMDB API key</li>
+            <li>Optional: Real-Debrid account</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
   </div>
 
-  <div style="margin-top:.75rem">
-    <button class="preview-toggle" id="previewToggle" onclick="togglePreview()">
-      <span>🎬 Streams Preview</span>
-      <span class="arr">›</span>
-    </button>
-    <div class="preview-body" id="previewBody">
-      <div class="preview-header">Example of how streams appear in Stremio</div>
-      <div id="previewCards"></div>
-      <div class="preview-note">Actual streams depend on the files in your TorBox / Real-Debrid account</div>
-    </div>
-  </div>
+  <div class="toast" id="toast">Copied!</div>
 
-  <div class="self-host-box">
-    <p>🚀 Want maximum speed and privacy? Consider <a href="https://github.com/leleasley/my-repo" target="_blank" rel="noopener">self-hosting this addon</a></p>
-    <a href="https://github.com/leleasley/my-repo" target="_blank" rel="noopener" class="gh-link">⭐ Star us on GitHub</a>
-  </div>
-
-  <div class="footer">LeLibrary • Stremio + TorBox + TMDB</div>
-</div>
-<div class="toast" id="toast">✓ Copied!</div>
-
-<script>
-  function toggleVis(id, btn) {
-    const el = document.getElementById(id);
-    const isPass = el.type === 'password';
-    el.type = isPass ? 'text' : 'password';
-    btn.textContent = isPass ? '🙈' : '👁';
-  }
-
-  function encodeConfig(cfg) {
-    return btoa(JSON.stringify(cfg))
-      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-  }
-
-  function toggleRdCatalog() {
-    const hasRd = document.getElementById('rdApiKey').value.trim().length > 0;
-    document.getElementById('rdCatalogField').style.display = hasRd ? 'block' : 'none';
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2200);
-  }
-
-  function generate() {
-    const torboxApiKey = document.getElementById('torboxApiKey').value.trim();
-    const tmdbApiKey   = document.getElementById('tmdbApiKey').value.trim();
-    const rdApiKey     = document.getElementById('rdApiKey').value.trim();
-    const rdCatalog    = document.getElementById('rdCatalog').value;
-    const sortBy       = document.getElementById('sortBy').value;
-    const lang         = document.getElementById('lang').value;
-
-    let valid = true;
-    [['torboxApiKey', torboxApiKey], ['tmdbApiKey', tmdbApiKey]].forEach(([id, val]) => {
+  <script>
+    function toggleVis(id, btn) {
       const el = document.getElementById(id);
-      if (!val) { el.classList.add('invalid'); valid = false; }
-      else el.classList.remove('invalid');
-    });
-    if (!valid) {
-      showToast('⚠ Fill in the required fields');
-      return;
+      const isPass = el.type === 'password';
+      el.type = isPass ? 'text' : 'password';
+      btn.textContent = isPass ? '🙈' : '👁';
     }
 
-    const btn = document.getElementById('btnGenerate');
-    const originalLabel = document.getElementById('genBtnTitle').textContent;
-    btn.disabled = true;
-    document.getElementById('genBtnTitle').textContent = 'Generating…';
+    function encodeConfig(cfg) {
+      return btoa(JSON.stringify(cfg))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
 
-    const cfg = { torboxApiKey, tmdbApiKey, sortBy, lang };
-    if (rdApiKey) { cfg.rdApiKey = rdApiKey; cfg.rdCatalog = rdCatalog; }
+    function toggleRdCatalog() {
+      const hasRd = document.getElementById('rdApiKey').value.trim().length > 0;
+      document.getElementById('rdCatalogField').style.display = hasRd ? 'block' : 'none';
+    }
 
-    const encoded     = encodeConfig(cfg);
-    const origin      = window.location.origin;
-    const manifestUrl = `${origin}/${encoded}/manifest.json`;
-    const stremioDeep = manifestUrl.replace(/^https?:\/\//, 'stremio://');
-    const stremioWeb  = `https://web.stremio.com/#/addons?addon=${encodeURIComponent(manifestUrl)}`;
-    const nuvioDeep   = manifestUrl.replace(/^https?:\/\//, 'nuvio://');
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
 
-    setTimeout(() => {
-      document.getElementById('manifestUrl').textContent = manifestUrl;
-      document.getElementById('btnDesktop').href = stremioDeep;
-      document.getElementById('btnWeb').href = stremioWeb;
-      document.getElementById('btnNuvio').href = nuvioDeep;
-      document.getElementById('btnDesktop').classList.add('show');
-      document.getElementById('btnWeb').classList.add('show');
-      document.getElementById('btnNuvio').classList.add('show');
-      document.getElementById('urlRow').classList.add('show');
-      document.getElementById('secNote').style.display = 'block';
-      btn.disabled = false;
-      document.getElementById('genBtnTitle').textContent = originalLabel;
-      document.getElementById('btnDesktop').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 250);
-  }
+    function generate() {
+      const torboxApiKey = document.getElementById('torboxApiKey').value.trim();
+      const tmdbApiKey   = document.getElementById('tmdbApiKey').value.trim();
+      const rdApiKey     = document.getElementById('rdApiKey').value.trim();
+      const rdCatalog    = document.getElementById('rdCatalog').value;
+      const sortBy       = document.getElementById('sortBy').value;
+      const lang         = document.getElementById('lang').value;
 
-  function copyUrl(btn) {
-    const url = document.getElementById('manifestUrl').textContent;
-    navigator.clipboard.writeText(url).then(() => {
-      showToast('✓ URL copied!');
-      flashCopied(btn);
-    });
-  }
-
-  function copyRef(btn) {
-    const code = document.getElementById('refCode').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      showToast('✓ Code copied!');
-      flashCopied(btn);
-    });
-  }
-
-  function flashCopied(btn) {
-    const original = btn.textContent;
-    btn.textContent = '✓ Copied';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1600);
-  }
-
-  function resetForm() {
-    ['torboxApiKey', 'tmdbApiKey', 'rdApiKey'].forEach(id => {
-      const el = document.getElementById(id);
-      el.value = '';
-      el.classList.remove('invalid');
-    });
-    document.getElementById('lang').value = 'en-US';
-    document.getElementById('sortBy').value = 'data_adicao';
-    document.getElementById('rdCatalogField').style.display = 'none';
-    document.getElementById('btnDesktop').classList.remove('show');
-    document.getElementById('btnWeb').classList.remove('show');
-    document.getElementById('btnNuvio').classList.remove('show');
-    document.getElementById('urlRow').classList.remove('show');
-    document.getElementById('secNote').style.display = 'none';
-    document.getElementById('manifestUrl').textContent = '';
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const cfg = window.__INITIAL_CONFIG__;
-    if (cfg) {
-      if (cfg.torboxApiKey) document.getElementById('torboxApiKey').value = cfg.torboxApiKey;
-      if (cfg.tmdbApiKey) document.getElementById('tmdbApiKey').value = cfg.tmdbApiKey;
-      if (cfg.rdApiKey) {
-        document.getElementById('rdApiKey').value = cfg.rdApiKey;
-        toggleRdCatalog();
+      let valid = true;
+      [['torboxApiKey', torboxApiKey], ['tmdbApiKey', tmdbApiKey]].forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (!val) { el.classList.add('invalid'); valid = false; }
+        else el.classList.remove('invalid');
+      });
+      if (!valid) {
+        showToast('Fill in the required fields');
+        return;
       }
-      if (cfg.rdCatalog) document.getElementById('rdCatalog').value = cfg.rdCatalog;
-      if (cfg.sortBy) document.getElementById('sortBy').value = cfg.sortBy;
-      if (cfg.lang) document.getElementById('lang').value = cfg.lang;
-      setTimeout(() => generate(), 100);
+
+      const btn = document.getElementById('btnGenerate');
+      const originalLabel = document.getElementById('genBtnTitle').textContent;
+      btn.disabled = true;
+      document.getElementById('genBtnTitle').textContent = 'Generating...';
+
+      const cfg = { torboxApiKey, tmdbApiKey, sortBy, lang };
+      if (rdApiKey) { cfg.rdApiKey = rdApiKey; cfg.rdCatalog = rdCatalog; }
+
+      const encoded     = encodeConfig(cfg);
+      const origin      = window.location.origin;
+      const manifestUrl = `${origin}/${encoded}/manifest.json`;
+      const stremioDeep = manifestUrl.replace(/^https?:\/\//, 'stremio://');
+      const stremioWeb  = `https://web.stremio.com/#/addons?addon=${encodeURIComponent(manifestUrl)}`;
+      const nuvioDeep   = manifestUrl.replace(/^https?:\/\//, 'nuvio://');
+
+      setTimeout(() => {
+        document.getElementById('manifestUrl').textContent = manifestUrl;
+        document.getElementById('btnDesktop').href = stremioDeep;
+        document.getElementById('btnWeb').href = stremioWeb;
+        document.getElementById('btnNuvio').href = nuvioDeep;
+        document.getElementById('btnDesktop').classList.add('show');
+        document.getElementById('btnWeb').classList.add('show');
+        document.getElementById('btnNuvio').classList.add('show');
+        document.getElementById('urlRow').classList.add('show');
+        document.getElementById('secNote').style.display = 'block';
+        btn.disabled = false;
+        document.getElementById('genBtnTitle').textContent = originalLabel;
+        document.getElementById('btnDesktop').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 250);
     }
-  });
 
-  document.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
-
-  // ── Stream Preview ────────────────────────────────────────────────────
-  const SMALL_CAPS_MAP = {
-    a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ғ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',
-    l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',r:'ʀ',s:'s',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',y:'ʏ',z:'ᴢ',
-  };
-  const toSC = s => s.toLowerCase().split('').map(c => SMALL_CAPS_MAP[c]||c).join('');
-  const BR_GROUPS = /^(bioma|c76|franceira|sigla|sf|tossato|sh4down|7sprit7|pia|riper|tomtom|andrehsa|fly|cza)$/i;
-
-  function pvQuality(n) {
-    const u = n.toUpperCase();
-    if (u.match(/\b(2160P|4K|UHD)\b/)) return '4K';
-    if (u.match(/\b1080P\b/))           return '1080p';
-    if (u.match(/\b720P\b/))            return '720p';
-    if (u.match(/\b480P\b/))            return '480p';
-    return '';
-  }
-  function pvVisualTags(n) {
-    const u = n.toUpperCase(), t = [];
-    if (u.match(/DOLBY.?VISION|\bDV\b/)) t.push('⭐ ᴅᴠ');
-    if (u.match(/HDR10(\+|PLUS)/))        t.push('💫 ʜᴅʀ¹⁰⁺');
-    else if (u.match(/\bHDR10\b/))        t.push('🌟 ʜᴅʀ¹⁰');
-    else if (u.match(/\bHDR\b/))          t.push('🌟 ʜᴅʀ');
-    if (u.match(/\b10.?BIT\b/))           t.push('🎨 10ʙɪᴛ');
-    return t.join(' ');
-  }
-  function pvCodec(n) {
-    const u = n.toUpperCase();
-    if (u.match(/\bH\.?265\b|\bHEVC\b|\bX265\b/)) return 'ʜᴇᴠᴄ';
-    if (u.match(/\bH\.?264\b|\bAVC\b|\bX264\b/))  return 'ᴀᴠᴄ';
-    if (u.match(/\bAV1\b/))                         return 'ᴀᴠ1';
-    return '';
-  }
-  function pvSource(n) {
-    const u = n.toUpperCase();
-    if (u.match(/\bBLURAY\b|\bBLU.RAY\b|\bBDRIP\b/)) return 'BluRay';
-    if (u.match(/\bWEB.DL\b|\bWEBDL\b/))              return 'WEB-DL';
-    if (u.match(/\bWEBRIP\b/))                         return 'WEBRip';
-    return '';
-  }
-  function pvAudio(n) {
-    const u = n.toUpperCase(), p = [];
-    if      (u.match(/\bDUAL\b|\bDUBLADO\b/))      p.push('Dubbed');
-    else if (u.match(/\bNACIONAL\b|\bPT.?BR\b/))    p.push('PT-BR');
-    else if (u.match(/\bLEGENDADO\b/))              p.push('Subbed');
-    else if (u.match(/\bENG(LISH)?\b/))             p.push('EN');
-    if (u.match(/\bTRUEHD\b/))                       p.push('TrueHD');
-    if (u.match(/\bATMOS\b/))                        p.push('Atmos');
-    else if (!u.match(/\bTRUEHD\b/)) {
-      if      (u.match(/\bDTS.?HD\b/))              p.push('DTS-HD');
-      else if (u.match(/\bDTS\b/))                  p.push('DTS');
-      else if (u.match(/\bDDP?5\.?1\b|\bDD5\.?1\b/)) p.push('DD5.1');
-      else if (u.match(/\bAAC\b/))                  p.push('AAC');
+    function copyUrl(btn) {
+      const url = document.getElementById('manifestUrl').textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('URL copied!');
+        flashCopied(btn);
+      });
     }
-    return p.join(' · ');
-  }
-  function pvSubs(n) {
-    const u = n.toUpperCase();
-    if (u.match(/\bMULTI.?SUB\b/))                        return 'Multi';
-    if (u.match(/\bPLSUB\b/))                             return 'PT';
-    if (u.match(/\bLEGENDADO\b/) && !u.match(/\bDUAL\b/)) return 'PT-BR';
-    return '';
-  }
-  function pvGroup(n) {
-    const base = n.replace(/\.(mkv|mp4|avi|mov|ts|wmv|m4v|webm)$/i,'');
-    const m = base.match(/-([A-Za-z0-9]{2,12})$/);
-    return m ? m[1] : '';
-  }
-  function pvBytes(b) {
-    if (!b) return '';
-    const gb = b/1024/1024/1024;
-    return gb>=1 ? `${gb.toFixed(2)} ɢʙ` : `${(b/1024/1024).toFixed(0)} ᴍʙ`;
-  }
-  function buildStreamName(filename, source) {
-    const provider = source === 'realdebrid' ? '🔴 RD' : '⚡ TorBox';
-    const q = pvQuality(filename);
-    const resLabel = {'4K':'🟣 4ᴋ','1080p':'🔵 ғʜᴅ','720p':'🟢 ʜᴅ','480p':'⚫ sᴅ'}[q]||'';
-    const src = pvSource(filename);
-    const line2 = [resLabel, src].filter(Boolean).join(' · ');
-    const tags = pvVisualTags(filename);
-    return [provider+' ⚡', line2, tags].filter(Boolean).join('\n');
-  }
-  function buildStreamDesc(filename, size, source) {
-    const display = filename.replace(/\.(mkv|mp4|avi|mov|ts|wmv|m4v|webm)$/i,'');
-    const sz = pvBytes(size);
-    const codec = pvCodec(filename);
-    const audio = pvAudio(filename);
-    const subs  = pvSubs(filename);
-    const group = pvGroup(filename);
-    const isBR  = group && BR_GROUPS.test(group);
-    const lines = [];
-    const infoRow = [sz ? `💾 ${sz}` : '', codec ? `⚙️ ${codec}` : ''].filter(Boolean).join('   ');
-    if (infoRow) lines.push(infoRow);
-    const audioRow = [audio ? `🔊 ${audio}` : '', subs ? `💬 ${subs}` : ''].filter(Boolean).join('   ');
-    if (audioRow) lines.push(audioRow);
-    if (group) lines.push(`${isBR ? '🇧🇷 ' : ''}🫟 ${toSC(group)}`);
-    if (display) lines.push(`✔️ ${toSC(display)}`);
-    return lines.join('\n');
-  }
 
-  const SAMPLES = [
-    { filename: 'Sonic.the.Hedgehog.3.2024.1080p.WEB-DL.H265.Dual.Audio.PT-BR.DD5.1-BIOMA.mkv', size: 9126805504, source: 'torbox' },
-    { filename: 'Dune.Part.Two.2024.2160p.BluRay.HEVC.HDR10Plus.TrueHD.Atmos-GROUP.mkv', size: 45097156608, source: 'torbox' },
-    { filename: 'Game.of.Thrones.S01E01.720p.WEBRip.x264-FoV.mkv', size: 1258291200, source: 'realdebrid' },
-  ];
+    function copyRef(btn) {
+      const code = document.getElementById('refCode').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('Code copied!');
+        flashCopied(btn);
+      });
+    }
 
-  function renderPreview() {
-    const container = document.getElementById('previewCards');
-    container.innerHTML = SAMPLES.map(s => {
-      const name = buildStreamName(s.filename, s.source);
-      const desc = buildStreamDesc(s.filename, s.size, s.source);
-      return `<div class="stream-card">
-        <div class="stream-name">${name}</div>
-        <div class="stream-desc">${desc}</div>
-      </div>`;
-    }).join('');
-  }
+    function flashCopied(btn) {
+      const original = btn.textContent;
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+    }
 
-  function togglePreview() {
-    const btn  = document.getElementById('previewToggle');
-    const body = document.getElementById('previewBody');
-    const isOpen = body.classList.toggle('open');
-    btn.classList.toggle('open', isOpen);
-    if (isOpen) renderPreview();
-  }
-</script>
+    function resetForm() {
+      ['torboxApiKey', 'tmdbApiKey', 'rdApiKey'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        el.classList.remove('invalid');
+      });
+      document.getElementById('lang').value = 'en-US';
+      document.getElementById('sortBy').value = 'data_adicao';
+      document.getElementById('rdCatalogField').style.display = 'none';
+      document.getElementById('btnDesktop').classList.remove('show');
+      document.getElementById('btnWeb').classList.remove('show');
+      document.getElementById('btnNuvio').classList.remove('show');
+      document.getElementById('urlRow').classList.remove('show');
+      document.getElementById('secNote').style.display = 'none';
+      document.getElementById('manifestUrl').textContent = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cfg = window.__INITIAL_CONFIG__;
+      if (cfg) {
+        if (cfg.torboxApiKey) document.getElementById('torboxApiKey').value = cfg.torboxApiKey;
+        if (cfg.tmdbApiKey) document.getElementById('tmdbApiKey').value = cfg.tmdbApiKey;
+        if (cfg.rdApiKey) {
+          document.getElementById('rdApiKey').value = cfg.rdApiKey;
+          toggleRdCatalog();
+        }
+        if (cfg.rdCatalog) document.getElementById('rdCatalog').value = cfg.rdCatalog;
+        if (cfg.sortBy) document.getElementById('sortBy').value = cfg.sortBy;
+        if (cfg.lang) document.getElementById('lang').value = cfg.lang;
+        setTimeout(() => generate(), 100);
+      }
+    });
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+
+    // ── Stream Preview ──
+    const SMALL_CAPS_MAP = {
+      a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ғ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',
+      l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',r:'ʀ',s:'s',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',y:'ʏ',z:'ᴢ',
+    };
+    const toSC = s => s.toLowerCase().split('').map(c => SMALL_CAPS_MAP[c]||c).join('');
+    const BR_GROUPS = /^(bioma|c76|franceira|sigla|sf|tossato|sh4down|7sprit7|pia|riper|tomtom|andrehsa|fly|cza)$/i;
+
+    function pvQuality(n) {
+      const u = n.toUpperCase();
+      if (u.match(/\b(2160P|4K|UHD)\b/)) return '4K';
+      if (u.match(/\b1080P\b/))           return '1080p';
+      if (u.match(/\b720P\b/))            return '720p';
+      if (u.match(/\b480P\b/))            return '480p';
+      return '';
+    }
+    function pvVisualTags(n) {
+      const u = n.toUpperCase(), t = [];
+      if (u.match(/DOLBY.?VISION|\bDV\b/)) t.push('DV');
+      if (u.match(/HDR10(\+|PLUS)/))        t.push('HDR10+');
+      else if (u.match(/\bHDR10\b/))        t.push('HDR10');
+      else if (u.match(/\bHDR\b/))          t.push('HDR');
+      if (u.match(/\b10.?BIT\b/))           t.push('10-bit');
+      return t.join(' · ');
+    }
+    function pvCodec(n) {
+      const u = n.toUpperCase();
+      if (u.match(/\bH\.?265\b|\bHEVC\b|\bX265\b/)) return 'HEVC';
+      if (u.match(/\bH\.?264\b|\bAVC\b|\bX264\b/))  return 'AVC';
+      if (u.match(/\bAV1\b/))                         return 'AV1';
+      return '';
+    }
+    function pvSource(n) {
+      const u = n.toUpperCase();
+      if (u.match(/\bBLURAY\b|\bBLU.RAY\b|\bBDRIP\b/)) return 'BluRay';
+      if (u.match(/\bWEB.DL\b|\bWEBDL\b/))              return 'WEB-DL';
+      if (u.match(/\bWEBRIP\b/))                         return 'WEBRip';
+      return '';
+    }
+    function pvAudio(n) {
+      const u = n.toUpperCase(), p = [];
+      if      (u.match(/\bDUAL\b|\bDUBLADO\b/))      p.push('Dubbed');
+      else if (u.match(/\bNACIONAL\b|\bPT.?BR\b/))    p.push('PT-BR');
+      else if (u.match(/\bLEGENDADO\b/))              p.push('Subbed');
+      else if (u.match(/\bENG(LISH)?\b/))             p.push('EN');
+      if (u.match(/\bTRUEHD\b/))                       p.push('TrueHD');
+      if (u.match(/\bATMOS\b/))                        p.push('Atmos');
+      else if (!u.match(/\bTRUEHD\b/)) {
+        if      (u.match(/\bDTS.?HD\b/))              p.push('DTS-HD');
+        else if (u.match(/\bDTS\b/))                  p.push('DTS');
+        else if (u.match(/\bDDP?5\.?1\b|\bDD5\.?1\b/)) p.push('DD5.1');
+        else if (u.match(/\bAAC\b/))                  p.push('AAC');
+      }
+      return p.join(' · ');
+    }
+    function pvGroup(n) {
+      const base = n.replace(/\.(mkv|mp4|avi|mov|ts|wmv|m4v|webm)$/i,'');
+      const m = base.match(/-([A-Za-z0-9]{2,12})$/);
+      return m ? m[1] : '';
+    }
+    function pvBytes(b) {
+      if (!b) return '';
+      const gb = b/1024/1024/1024;
+      return gb>=1 ? `${gb.toFixed(2)} GB` : `${(b/1024/1024).toFixed(0)} MB`;
+    }
+    function buildStreamName(filename, source) {
+      const provider = source === 'realdebrid' ? '🔴 RD' : '⚡ TorBox';
+      const q = pvQuality(filename);
+      const resLabel = {'4K':'🟣 4K','1080p':'🔵 FHD','720p':'🟢 HD','480p':'⚫ SD'}[q]||'';
+      const src = pvSource(filename);
+      const line2 = [resLabel, src].filter(Boolean).join(' · ');
+      const tags = pvVisualTags(filename);
+      return [provider+' ⚡', line2, tags].filter(Boolean).join('\n');
+    }
+    function buildStreamDesc(filename, size, source) {
+      const display = filename.replace(/\.(mkv|mp4|avi|mov|ts|wmv|m4v|webm)$/i,'');
+      const sz = pvBytes(size);
+      const codec = pvCodec(filename);
+      const audio = pvAudio(filename);
+      const group = pvGroup(filename);
+      const isBR  = group && BR_GROUPS.test(group);
+      const lines = [];
+      const infoRow = [sz ? `💾 ${sz}` : '', codec ? `⚙️ ${codec}` : ''].filter(Boolean).join('   ');
+      if (infoRow) lines.push(infoRow);
+      if (audio) lines.push(`🔊 ${audio}`);
+      if (group) lines.push(`${isBR ? '🇧🇷 ' : ''}🫟 ${toSC(group)}`);
+      if (display) lines.push(`✔️ ${toSC(display)}`);
+      return lines.join('\n');
+    }
+
+    const SAMPLES = [
+      { filename: 'Sonic.the.Hedgehog.3.2024.1080p.WEB-DL.H265.Dual.Audio.PT-BR.DD5.1-BIOMA.mkv', size: 9126805504, source: 'torbox' },
+      { filename: 'Dune.Part.Two.2024.2160p.BluRay.HEVC.HDR10Plus.TrueHD.Atmos-GROUP.mkv', size: 45097156608, source: 'torbox' },
+      { filename: 'Game.of.Thrones.S01E01.720p.WEBRip.x264-FoV.mkv', size: 1258291200, source: 'realdebrid' },
+    ];
+
+    function renderPreview() {
+      const container = document.getElementById('previewCards');
+      container.innerHTML = SAMPLES.map(s => {
+        const name = buildStreamName(s.filename, s.source);
+        const desc = buildStreamDesc(s.filename, s.size, s.source);
+        return `<div class="stream-row">
+          <div class="stream-label">${name}</div>
+          <div class="stream-detail">${desc}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function togglePreview() {
+      const btn  = document.getElementById('previewToggle');
+      const body = document.getElementById('previewBody');
+      const isOpen = body.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      if (isOpen) renderPreview();
+    }
+  </script>
 </body>
 </html>

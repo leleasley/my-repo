@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+  <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#09090b">
+  <title>LeLibrary — Your TorBox Library, Beautifully Organized</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #09090b;
+      --bg-raised: #111114;
+      --bg-card: #161619;
+      --border: #222228;
+      --amber: #f59e0b;
+      --amber-dim: #b45309;
+      --amber-glow: rgba(245, 158, 11, 0.15);
+      --white: #fafafa;
+      --muted: #71717a;
+      --text: #d4d4d8;
+      --font: 'Space Grotesk', -apple-system, sans-serif;
+      --mono: 'DM Mono', 'Menlo', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── FILM GRAIN ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── NAV ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 4vw, 48px);
+      height: 64px;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--white);
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: contain;
+    }
+
+    .brand-name {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .topbar-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .topbar-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .topbar-links a:hover { color: var(--white); }
+
+    .topbar-cta {
+      background: var(--amber) !important;
+      color: var(--bg) !important;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 600 !important;
+      font-size: 0.82rem !important;
+    }
+    .topbar-cta:hover { opacity: 0.9; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0; right: 0;
+      background: var(--bg-raised);
+      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      padding: 16px 24px 24px;
+      z-index: 99;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--white); }
+    .mobile-menu .mob-cta {
+      background: var(--amber);
+      color: var(--bg) !important;
+      text-align: center;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 640px) {
+      .hamburger { display: flex; }
+      .topbar-links { display: none; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px clamp(24px, 5vw, 80px) 80px;
+      overflow: hidden;
+    }
+
+    /* Vertical film strip lines */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 8%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      right: 8%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
+      pointer-events: none;
+    }
+
+    /* Grid dots background */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    @media (max-width: 800px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+    }
+
+    .hero-left {}
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--amber-glow);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 28px;
+      font-family: var(--mono);
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: var(--amber);
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 26px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-family: var(--font);
+    }
+
+    .btn-amber {
+      background: var(--amber);
+      color: var(--bg);
+    }
+    .btn-amber:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(245, 158, 11, 0.25);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover {
+      border-color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      transform: translateY(-2px);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 36px;
+      margin-top: 48px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-family: var(--mono);
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .stat-value span { color: var(--amber); }
+
+    /* ── HERO RIGHT — MOCKUP ── */
+    .hero-right {
+      position: relative;
+    }
+
+    .mockup-frame {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+
+    .mockup-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-raised);
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .mockup-dots span {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .mockup-dots span:first-child { background: #ef4444; }
+    .mockup-dots span:nth-child(2) { background: #f59e0b; }
+    .mockup-dots span:last-child { background: #22c55e; }
+
+    .mockup-url {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .mockup-body {
+      padding: 20px;
+    }
+
+    .mockup-row {
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .mockup-row.visible { opacity: 1; transform: translateY(0); }
+
+    .mockup-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .mockup-row-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mockup-row-title .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    .mockup-row-count {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .mockup-posters {
+      display: flex;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .mockup-poster {
+      flex-shrink: 0;
+      width: 72px;
+      height: 108px;
+      border-radius: 6px;
+      background: var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mockup-poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .mockup-poster-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--bg-raised), var(--border));
+    }
+
+    /* Floating badge on mockup */
+    .mockup-float-badge {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      background: var(--amber);
+      color: var(--bg);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+      z-index: 2;
+    }
+
+    @media (max-width: 800px) {
+      .hero { min-height: auto; padding-bottom: 60px; }
+      .hero-right { display: none; }
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-section {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 25s linear infinite;
+      gap: 48px;
+    }
+
+    .marquee-track:hover { animation-play-state: paused; }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    .marquee-item:hover { opacity: 1; }
+
+    .marquee-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+    }
+
+    /* ── FEATURES ── */
+    .features-section {
+      padding: 100px clamp(24px, 5vw, 80px);
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 12px;
+    }
+
+    .section-heading {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 60px;
+      max-width: 600px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 800px) { .feature-grid { grid-template-columns: 1fr; } }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px 28px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--amber), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(245, 158, 11, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-num {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--amber-dim);
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── WIDE CARD ── */
+    .wide-card {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      padding: 40px;
+      align-items: center;
+    }
+
+    @media (max-width: 700px) { .wide-card { grid-template-columns: 1fr; } }
+
+    .wide-card-text h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .wide-card-text p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      letter-spacing: 0.03em;
+    }
+
+    .wide-card-visual {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .stream-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .stream-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.2s;
+    }
+    .stream-item:hover { border-color: var(--amber-dim); }
+
+    .stream-badge {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      padding: 3px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .stream-badge.fourk { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+    .stream-badge.fhd { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
+    .stream-badge.hd { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+
+    .stream-info { flex: 1; min-width: 0; }
+    .stream-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stream-meta {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-top: 2px;
+    }
+
+    .stream-size {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* ── STEPS ── */
+    .steps-section {
+      padding: 100px clamp(24px, 5vw, 80px);
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 2;
+    }
+
+    .steps-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 700px) { .steps-grid { grid-template-columns: 1fr; gap: 40px; } }
+
+    .step {
+      padding: 0 32px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .step.revealed { opacity: 1; transform: translateY(0); }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -1px;
+      width: 1px;
+      height: calc(100% - 40px);
+      background: linear-gradient(to bottom, var(--amber-dim), transparent);
+      opacity: 0.3;
+    }
+
+    @media (max-width: 700px) {
+      .step:not(:last-child)::after {
+        top: auto;
+        bottom: -20px;
+        right: 20px;
+        width: calc(100% - 40px);
+        height: 1px;
+        background: linear-gradient(to right, var(--amber-dim), transparent);
+      }
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--amber);
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+
+    .step h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 100px clamp(24px, 5vw, 80px);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid var(--border);
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(245, 158, 11, 0.08), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-title {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-title em { font-style: normal; color: var(--amber); }
+
+    .cta-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 440px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px clamp(24px, 5vw, 80px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--muted);
+      position: relative;
+      z-index: 2;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--white); }
+
+    .footer-links { display: flex; gap: 24px; }
+
+    @media (max-width: 640px) {
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="topbar">
+    <a href="/" class="brand">
+      <img src="/LeLibrary.png" alt="LeLibrary" class="brand-logo">
+      <div class="brand-name">LeLibrary</div>
+    </a>
+    <nav class="topbar-links">
+      <a href="#features">Features</a>
+      <a href="#how">Setup</a>
+      <a href="#streams">Streams</a>
+      <a class="topbar-cta" href="/configure">Configure Addon</a>
+    </nav>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#features" onclick="toggleMenu()">Features</a>
+      <a href="#how" onclick="toggleMenu()">Setup</a>
+      <a href="#streams" onclick="toggleMenu()">Streams</a>
+      <a class="mob-cta" href="/configure" onclick="toggleMenu()">Configure Addon</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="grid-bg"></div>
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="badge"><span class="badge-dot"></span> Stremio &amp; Nuvio Addon</div>
+        <h1 class="hero-title">Your TorBox library,<br><em>actually organized.</em></h1>
+        <p class="hero-desc">LeLibrary pulls everything from your TorBox account — movies, series, anime — groups episodes together, and enriches it all with TMDB metadata. One addon, zero effort.</p>
+        <div class="hero-actions">
+          <a class="btn btn-amber" href="/configure">Set Up Now →</a>
+          <a class="btn btn-outline" href="#features">See What It Does</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-label">Source</div>
+            <div class="stat-value">TorBox <span>+</span> RD</div>
+          </div>
+          <div>
+            <div class="stat-label">Metadata</div>
+            <div class="stat-value">TMDB</div>
+          </div>
+          <div>
+            <div class="stat-label">Clients</div>
+            <div class="stat-value">3 <span>apps</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div style="position:relative;">
+          <div class="mockup-float-badge">LIVE</div>
+          <div class="mockup-frame">
+            <div class="mockup-toolbar">
+              <div class="mockup-dots"><span></span><span></span><span></span></div>
+              <div class="mockup-url">lelibrary.app/configure</div>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-row">
+                <div class="mockup-row-header">
+                  <div class="mockup-row-title"><span class="dot"></span> Movies</div>
+                  <div class="mockup-row-count">24 items</div>
+                </div>
+                <div class="mockup-posters" id="mRow1"></div>
+              </div>
+              <div class="mockup-row">
+                <div class="mockup-row-header">
+                  <div class="mockup-row-title"><span class="dot"></span> Series</div>
+                  <div class="mockup-row-count">18 items</div>
+                </div>
+                <div class="mockup-posters" id="mRow2"></div>
+              </div>
+              <div class="mockup-row">
+                <div class="mockup-row-header">
+                  <div class="mockup-row-title"><span class="dot"></span> Anime</div>
+                  <div class="mockup-row-count">12 items</div>
+                </div>
+                <div class="mockup-posters" id="mRow3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="features" class="features-section">
+    <div class="section-eyebrow">// capabilities</div>
+    <h2 class="section-heading">Everything your library has been missing.</h2>
+
+    <div class="feature-grid">
+      <!-- Wide card 1 -->
+      <div class="feature-card wide-card">
+        <div class="wide-card-text">
+          <div class="feature-num">01</div>
+          <h3>Smart Series Grouping</h3>
+          <p>Episodes are automatically detected from filenames and grouped into seasons. Works with standard naming, multi-episode packs like <code>S02E02-03</code>, and even anime with fansub group detection.</p>
+          <div class="tag-row">
+            <span class="tag">auto-detect</span>
+            <span class="tag">multi-ep packs</span>
+            <span class="tag">anime support</span>
+            <span class="tag">fansub detection</span>
+          </div>
+        </div>
+        <div class="wide-card-visual">
+          <div style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);margin-bottom:12px;">Detected from filename:</div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:var(--mono);font-size:0.78rem;color:var(--text);word-break:break-all;">
+            <span style="color:var(--amber);">[SubGroup]</span> Attack on Titan - S04E28 (1080p DTS).mkv
+            <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">
+              → Title: <span style="color:var(--white);">Attack on Titan</span><br>
+              → Season: <span style="color:var(--amber);">4</span> &nbsp; Episode: <span style="color:var(--amber);">28</span><br>
+              → Anime: <span style="color:#22c55e;">✓ detected</span> &nbsp; Group: <span style="color:var(--amber);">[SubGroup]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wide card 2 -->
+      <div class="feature-card wide-card" id="streams">
+        <div class="wide-card-text">
+          <div class="feature-num">02</div>
+          <h3>Rich Stream Info</h3>
+          <p>Every stream shows exactly what you're getting — quality, codec, HDR support, source, language, audio track, file size, and release group. All formatted and sorted intelligently.</p>
+          <div class="tag-row">
+            <span class="tag">4K / FHD / HD</span>
+            <span class="tag">HDR / DV</span>
+            <span class="tag">codec info</span>
+            <span class="tag">smart sort</span>
+          </div>
+        </div>
+        <div class="wide-card-visual">
+          <div class="stream-list">
+            <div class="stream-item">
+              <span class="stream-badge fourk">4K</span>
+              <div class="stream-info">
+                <div class="stream-name">Dune.Part.Two.2024.UHD.Blu-ray.Remux.DV.HDR.HEVC.TrueHD</div>
+                <div class="stream-meta">HEVC · DV · TrueHD Atmos · 7.1</div>
+              </div>
+              <div class="stream-size">62.4 GB</div>
+            </div>
+            <div class="stream-item">
+              <span class="stream-badge fhd">FHD</span>
+              <div class="stream-info">
+                <div class="stream-name">Dune.Part.Two.2024.1080p.WEB-DL.DDP5.1.Atmos.DV.HDR.HEVC</div>
+                <div class="stream-meta">HEVC · DV · DD+ Atmos · 5.1</div>
+              </div>
+              <div class="stream-size">14.2 GB</div>
+            </div>
+            <div class="stream-item">
+              <span class="stream-badge hd">HD</span>
+              <div class="stream-info">
+                <div class="stream-name">Dune.Part.Two.2024.720p.BluRay.x264.DTS</div>
+                <div class="stream-meta">AVC · DTS · 5.1</div>
+              </div>
+              <div class="stream-size">4.8 GB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Standard cards -->
+      <div class="feature-card">
+        <div class="feature-num">03</div>
+        <div class="feature-icon">🎭</div>
+        <h3>TMDB Metadata</h3>
+        <p>Posters, backdrops, ratings, cast info, plot summaries, and trailers — all fetched from TMDB and mapped to your library via IMDB IDs.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-num">04</div>
+        <div class="feature-icon">⚡</div>
+        <h3>Smart Caching</h3>
+        <p>Redis persistent cache plus in-memory NodeCache. Background refresh every 30 minutes with hash-based invalidation when your downloads change.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-num">05</div>
+        <div class="feature-icon">📡</div>
+        <h3>Dual Source</h3>
+        <p>Works with TorBox torrents &amp; usenet, plus optional Real-Debrid. Merge both catalogs or keep them completely separate.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="steps-section">
+    <div class="steps-inner">
+      <div class="section-eyebrow">// setup</div>
+      <h2 class="section-heading">Running in under 60 seconds.</h2>
+
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Grab your API keys</h3>
+          <p>Get your TorBox API key from your account settings. Grab a free TMDB key too. Real-Debrid is optional.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Configure the addon</h3>
+          <p>Paste your keys into the config page. Pick your language, sort order, and whether to include Real-Debrid.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Install &amp; watch</h3>
+          <p>Hit install for Stremio Desktop, Stremio Web, or Nuvio. Your library appears instantly — organized and enriched.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2 class="cta-title">Stop scrolling.<br>Start <em>watching.</em></h2>
+    <p class="cta-desc">Your TorBox library deserves better than a raw file list. Set up LeLibrary and see the difference.</p>
+    <div class="cta-actions">
+      <a class="btn btn-amber" href="/configure">Configure Addon →</a>
+      <a class="btn btn-outline" href="https://github.com/leleasley/my-repo" target="_blank">GitHub Repo</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>LeLibrary &mdash; Free &amp; Open Source</span>
+    <div class="footer-links">
+      <a href="/configure">Configure</a>
+      <a href="https://github.com/leleasley/my-repo" target="_blank">GitHub</a>
+      <a href="/manifest.json">Manifest</a>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('hamburger').classList.toggle('open');
+      document.getElementById('mobileMenu').classList.toggle('open');
+    }
+
+    // ── MARQUEE ──
+    (function() {
+      var items = [
+        { icon: '📦', text: 'TorBox Torrents' },
+        { icon: '📡', text: 'Usenet Support' },
+        { icon: '🔄', text: 'Real-Debrid' },
+        { icon: '🎬', text: 'TMDB Metadata' },
+        { icon: '📺', text: 'Stremio' },
+        { icon: '📱', text: 'Nuvio' },
+        { icon: '⚡', text: 'Redis Cache' },
+        { icon: '🐳', text: 'Docker Ready' },
+        { icon: '🔍', text: 'Search' },
+        { icon: '🎯', text: 'Episode Filtering' },
+        { icon: '🎞️', text: '4K / HDR / DV' },
+        { icon: '🤖', text: 'Anime Detection' },
+      ];
+      var track = document.getElementById('marqueeTrack');
+      var html = '';
+      // duplicate for seamless loop
+      for (var d = 0; d < 2; d++) {
+        items.forEach(function(item) {
+          html += '<div class="marquee-item"><span class="marquee-icon">' + item.icon + '</span>' + item.text + '</div>';
+        });
+      }
+      track.innerHTML = html;
+    })();
+
+    // ── MOCKUP POSTERS ──
+    (function() {
+      var movies = [
+        '/img/tmdb/w200/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
+        '/img/tmdb/w200/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg',
+        '/img/tmdb/w200/6ApDtO7xaWAfPqfi2IARXIzj8QS.jpg',
+        '/img/tmdb/w200/1E5baAaEse26fej7uHcjOgEE2t2.jpg',
+        '/img/tmdb/w200/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg',
+      ];
+      var series = [
+        '/img/tmdb/w200/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg',
+        '/img/tmdb/w200/zjg4jpK1Wp2kiRvtt5ND0kznako.jpg',
+        '/img/tmdb/w200/7vcwOySsqeyEdmfHQNT5jHCL2gb.jpg',
+        '/img/tmdb/w200/gdIrmf2DdY5mgN6ycVP0XlzKzbE.jpg',
+        '/img/tmdb/w200/kZKfZWwFOAicgoKS2IO7oM1GuHZ.jpg',
+      ];
+      var anime = [
+        '/img/tmdb/w200/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg',
+        '/img/tmdb/w200/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg',
+        '/img/tmdb/w200/zqjSex7DZn7p4dU7mMktdJ8zQV5.jpg',
+        '/img/tmdb/w200/q2IiPRSXPOZ6qVRj36WRAYEQyHs.jpg',
+        '/img/tmdb/w200/cMD9Ygz11zjJzAovURpO75Qg7rT.jpg',
+      ];
+
+      function buildRow(elId, items) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        el.innerHTML = items.map(function(src) {
+          return '<div class="mockup-poster"><img src="' + src + '" alt="poster" loading="lazy"></div>';
+        }).join('');
+      }
+
+      buildRow('mRow1', movies);
+      buildRow('mRow2', series);
+      buildRow('mRow3', anime);
+    })();
+
+    // ── SCROLL REVEAL ──
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.step, .mockup-row').forEach(function(el) {
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

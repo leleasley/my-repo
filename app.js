@@ -36,6 +36,26 @@ app.use(express.static(path.join(ROOT_DIR, 'public'), {
   immutable: true,
 }));
 
+// Proxy TMDB images to avoid CORS blocking
+const axiosImg = require('axios');
+app.get('/img/tmdb/*', async (req, res) => {
+  try {
+    const tmdbPath = req.params[0];
+    const url = `https://image.tmdb.org/t/p/${tmdbPath}`;
+    const resp = await axiosImg.get(url, {
+      responseType: 'arraybuffer',
+      headers: { 'User-Agent': 'LeLibrary/1.5' },
+      timeout: 10000,
+    });
+    res.setHeader('Content-Type', resp.headers['content-type'] || 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    res.send(Buffer.from(resp.data));
+  } catch (err) {
+    console.error('[IMG PROXY]', err.message);
+    res.status(502).end();
+  }
+});
+
 function decodeConfig(str) {
   if (!str || typeof str !== 'string' || str.length > 2048) return null;
   try {
@@ -135,10 +155,6 @@ function getBaseManifest(baseUrl) {
     catalogs: [],
     behaviorHints: { configurable: true, configurationRequired: true },
     configureUrl: `${baseUrl}/configure`,
-    stremioAddonsConfig: {
-      issuer: "https://stremio-addons.net",
-      signature: "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..wuS2Idc3UAATsil5cgTVBw.YXJH_xCqef9srmpEvQnoCwnA62U2_CPGTB2UfL89gpqVTU928HWIhrHgrfXiQ6Qu_GYfKBjU1dKqKXp2ZGJb0_SoJ0pQK9lvhg23pN2JRXNhBbZirRxumbi3dFUpa3An.fn0tzw5B94KrkB5mXUanAw"
-    },
   };
 }
 
@@ -181,14 +197,10 @@ function getConfiguredManifest(baseUrl, config = {}) {
     idPrefixes: ['torbox:', 'tt', 'kitsu:'],
     catalogs,
     behaviorHints: { configurable: true },
-    stremioAddonsConfig: {
-      issuer: "https://stremio-addons.net",
-      signature: "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..wuS2Idc3UAATsil5cgTVBw.YXJH_xCqef9srmpEvQnoCwnA62U2_CPGTB2UfL89gpqVTU928HWIhrHgrfXiQ6Qu_GYfKBjU1dKqKXp2ZGJb0_SoJ0pQK9lvhg23pN2JRXNhBbZirRxumbi3dFUpa3An.fn0tzw5B94KrkB5mXUanAw"
-    },
   };
 }
 
-app.get('/', (req, res) => res.redirect('/manifest.json'));
+app.get('/', (req, res) => res.sendFile(path.join(ROOT_DIR, 'landing.html')));
 app.get('/configure', (req, res) => res.sendFile(path.join(ROOT_DIR, 'configure.html')));
 
 app.get('/:token/configure', (req, res) => {
