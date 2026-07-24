@@ -137,7 +137,9 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     const slug = (detail.title || detail.original_title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
     const result = {
-      id: `torbox:movie:${tmdbId}`, tmdbId, imdbId,
+      id: imdbId ? `${imdbId}` : `torbox:movie:${tmdbId}`, tmdbId, imdbId,
+      imdb_id: imdbId || undefined,
+      moviedb_id: tmdbId,
       type: 'movie',
       name: detail.title || detail.original_title,
       slug: `movie/${slug}-${tmdbId}`,
@@ -174,7 +176,9 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
     const slug = (detail.name || detail.original_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
     const result = {
-      id: `torbox:series:${tmdbId}`, tmdbId, imdbId,
+      id: imdbId ? `${imdbId}` : `torbox:series:${tmdbId}`, tmdbId, imdbId,
+      imdb_id: imdbId || undefined,
+      moviedb_id: tmdbId,
       type: 'series',
       name: detail.name || detail.original_name,
       slug: `series/${slug}-${tmdbId}`,
@@ -198,4 +202,18 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   }
 }
 
-module.exports = { searchMetadata, getMetadata, imdbToTmdb };
+// TMDB ID → IMDB ID
+async function tmdbToImdb(apiKey, tmdbId, type) {
+  const auth = tmdbAuth(apiKey);
+  const endpoint = type === 'movie' ? `/movie/${tmdbId}` : `/tv/${tmdbId}`;
+  try {
+    const res = await axios.get(`${TMDB_BASE}${endpoint}/external_ids`, {
+      headers: auth.headers,
+      params: auth.params,
+      timeout: 5000,
+    });
+    return res.data?.imdb_id || null;
+  } catch { return null; }
+}
+
+module.exports = { searchMetadata, getMetadata, imdbToTmdb, tmdbToImdb };
