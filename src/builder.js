@@ -88,7 +88,7 @@ async function matchItem(item, tmdbApiKey, type, lang) {
     const imdbId = await tmdbToImdb(tmdbApiKey, result.id, tmdbType);
 
     const meta = {
-      id:                   imdbId ? `torbox:${stremioType}:${imdbId}` : `torbox:${stremioType}:${result.id}`,
+      id:                   imdbId ? `torbox:${stremioType}:${result.id}:${imdbId}` : `torbox:${stremioType}:${result.id}`,
       type:                 stremioType,
       name:                 result.title || result.name,
       poster:               result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : null,
