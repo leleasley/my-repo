@@ -108,7 +108,7 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
   if (!detail) return null;
 
   const imdbId    = external?.imdb_id || null;
-  const cast      = (credits?.cast || []).slice(0, 8).map(c => c.name);
+  const cast      = (credits?.cast || []).slice(0, 20).map(c => c.name);
   const directors = type === 'movie'
     ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => c.name)
     : (detail.created_by || []).map(c => c.name);
@@ -119,20 +119,21 @@ async function getMetadata(apiKey, tmdbId, type, lang = 'pt-BR') {
 
   // Nuvio app_extras for richer metadata
   const appExtras = {};
-  const richCast = (credits?.cast || []).slice(0, 20).map(c => ({
+  const richCast = (credits?.cast || []).slice(0, 50).map(c => ({
     name: c.name,
     character: c.character || undefined,
     photo: c.profile_path ? `${TMDB_IMAGE}/w185${c.profile_path}` : undefined,
     tmdbId: c.id,
+    url: `https://www.themoviedb.org/person/${c.id}`,
   }));
   if (richCast.length > 0) appExtras.cast = richCast;
 
   const richDirectors = type === 'movie'
-    ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => ({ name: c.name }))
-    : (detail.created_by || []).map(c => ({ name: c.name }));
+    ? (credits?.crew || []).filter(c => c.job === 'Director').map(c => ({ name: c.name, url: `https://www.themoviedb.org/person/${c.id}` }))
+    : (detail.created_by || []).map(c => ({ name: c.name, url: `https://www.themoviedb.org/person/${c.id}` }));
   if (richDirectors.length > 0) appExtras.directors = richDirectors;
 
-  const richWriters = (credits?.crew || []).filter(c => c.job === 'Writer').map(c => ({ name: c.name }));
+  const richWriters = (credits?.crew || []).filter(c => c.job === 'Writer').map(c => ({ name: c.name, url: `https://www.themoviedb.org/person/${c.id}` }));
   if (richWriters.length > 0) appExtras.writers = richWriters;
 
   const certification = detail.content_ratings?.results?.find(r => r.iso_3166_1 === 'US')?.rating
