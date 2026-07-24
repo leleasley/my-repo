@@ -385,7 +385,6 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
       : Promise.resolve();
 
     const meta   = await buildMeta(tmdbId, type, tmdbApiKey, lang, torboxApiKey, rdApiKey);
-    if (meta) meta.id = id;
     const result = { meta };
 
     await Promise.all([
