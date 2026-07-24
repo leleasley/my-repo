@@ -330,9 +330,21 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
 
   const { torboxApiKey, rdApiKey, tmdbApiKey, lang = 'pt-BR' } = config;
   const { type, id } = req.params;
-  if (!tmdbApiKey || !id.startsWith('torbox:')) return res.json({ meta: null });
+  if (!tmdbApiKey) return res.json({ meta: null });
 
-  const cacheKey = cache.makeKey('meta', 'v2', id, lang);
+  let tmdbId;
+  if (id.startsWith('torbox:')) {
+    tmdbId = id.split(':')[2];
+  } else if (id.startsWith('tt')) {
+    const { imdbToTmdb } = require('./src/tmdb');
+    const mapped = await imdbToTmdb(tmdbApiKey, id.split(':')[0]);
+    if (!mapped) return res.json({ meta: null });
+    tmdbId = String(mapped.tmdbId);
+  } else {
+    return res.json({ meta: null });
+  }
+
+  const cacheKey = cache.makeKey('meta', 'v2', `torbox:${type}:${tmdbId}`, lang);
   const cached   = await cache.get(cacheKey);
 
   if (cached) {
@@ -341,10 +353,8 @@ app.get('/:token/meta/:type/:id.json', async (req, res) => {
     return res.json(cached);
   }
 
-  console.log(`[Meta] Building: ${id}`);
+  console.log(`[Meta] Building: ${id} (tmdbId=${tmdbId})`);
   try {
-    const parts  = id.split(':');
-    const tmdbId = parts[2];
     const userKey = (torboxApiKey || rdApiKey || '').slice(-6);
 
     // Para filmes: prefetch do stream em paralelo com buildMeta
