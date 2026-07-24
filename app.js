@@ -228,6 +228,29 @@ app.use('/api/torbox', async (req, res) => {
   }
 });
 
+// Lightweight TMDB API proxy for client-side poster fetching
+app.use('/api/tmdb', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+
+  const apiKey = req.headers.authorization?.replace('Bearer ', '');
+  if (!apiKey) return res.status(401).json({ error: 'Missing TMDB API key' });
+
+  const targetPath = req.url;
+  try {
+    const axios = require('axios');
+    const tmdbRes = await axios.get(`https://api.themoviedb.org/3${targetPath}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      timeout: 10000,
+    });
+    res.json(tmdbRes.data);
+  } catch (err) {
+    const status = err.response?.status || 500;
+    res.status(status).json({ error: err.response?.data?.status_message || err.message });
+  }
+});
+
 app.get('/:token/configure', (req, res) => {
   const config = decodeConfig(req.params.token);
   if (!config) return res.status(400).send('Invalid token');

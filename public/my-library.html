@@ -217,13 +217,19 @@
 
   <div class="login-section" id="loginSection">
     <h2>My Library</h2>
-    <p>Enter your TorBox API key to browse your downloads. All requests go directly from your browser to TorBox — nothing is stored on any server.</p>
+    <p>Browse your TorBox downloads. All requests go directly from your browser — nothing is stored on any server.</p>
     <div class="input-wrap">
+      <label style="font-size:.72rem;color:var(--muted);margin-bottom:.25rem;display:block">TorBox API Key</label>
       <input type="password" id="apiKey" placeholder="tb-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <button class="toggle-btn" type="button" onclick="toggleVis()" aria-label="Show/hide key">👁</button>
+      <button class="toggle-btn" type="button" onclick="toggleVis('apiKey',this)" aria-label="Show/hide key">👁</button>
+    </div>
+    <div class="input-wrap">
+      <label style="font-size:.72rem;color:var(--muted);margin-bottom:.25rem;display:block">TMDB API Key <span style="color:var(--muted);font-weight:400">(optional — for posters)</span></label>
+      <input type="password" id="tmdbKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <button class="toggle-btn" type="button" onclick="toggleVis('tmdbKey',this)" aria-label="Show/hide key">👁</button>
     </div>
     <button class="btn-load" id="btnLoad" onclick="loadLibrary()">Load Library</button>
-    <p class="hint">Get your key at <a href="https://torbox.app/settings" target="_blank">torbox.app/settings</a></p>
+    <p class="hint">Get TorBox key at <a href="https://torbox.app/settings" target="_blank">torbox.app/settings</a> · TMDB key at <a href="https://www.themoviedb.org/settings/api" target="_blank">themoviedb.org</a></p>
   </div>
 
   <div class="error-box" id="errorBox">
@@ -253,12 +259,13 @@
 
 <script>
 const TORBOX_API = '/api/torbox';
+const TMDB_API = '/api/tmdb';
 let allItems = [];
 let currentTab = 'all';
+let posterCache = {};
 
-function toggleVis() {
-  const el = document.getElementById('apiKey');
-  const btn = el.parentElement.querySelector('.toggle-btn');
+function toggleVis(id, btn) {
+  const el = document.getElementById(id);
   const isPass = el.type === 'password';
   el.type = isPass ? 'text' : 'password';
   btn.textContent = isPass ? '🙈' : '👁';
@@ -272,9 +279,7 @@ function showError(msg) {
   document.getElementById('emptyState').style.display = 'none';
 }
 
-function hideError() {
-  document.getElementById('errorBox').classList.remove('show');
-}
+function hideError() { document.getElementById('errorBox').classList.remove('show'); }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -284,9 +289,7 @@ function showToast(msg) {
 }
 
 async function torboxGet(path, apiKey) {
-  const res = await fetch(`${TORBOX_API}${path}`, {
-    headers: { 'Authorization': `Bearer ${apiKey}` },
-  });
+  const res = await fetch(`${TORBOX_API}${path}`, { headers: { 'Authorization': `Bearer ${apiKey}` } });
   if (!res.ok) {
     if (res.status === 401) throw new Error('Invalid API key — check your key at torbox.app/settings');
     if (res.status === 403) throw new Error('Access denied — your API key may be expired or inactive');
@@ -299,12 +302,38 @@ async function torboxGet(path, apiKey) {
   return data.data || [];
 }
 
+async function torboxDelete(path, apiKey) {
+  const res = await fetch(`${TORBOX_API}${path}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${apiKey}` } });
+  if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
+  return true;
+}
+
+async function tmdbSearch(title, apiKey) {
+  if (!apiKey) return null;
+  const cacheKey = `poster:${title}`;
+  if (posterCache[cacheKey]) return posterCache[cacheKey];
+  try {
+    const cleanTitle = title.replace(/\.[^.]+$/, '').replace(/\bS\d{1,2}E\d{1,2}\b/gi, '').replace(/\b(1080p|720p|2160p|4K|WEB-DL|BluRay|WEBRip|x264|x265|HEVC|AVC|DUAL|PT-BR|AAC|DDP5\.1|Atmos)\b/gi, '').replace(/[-.]/g, ' ').trim();
+    const res = await fetch(`${TMDB_API}/search/multi?query=${encodeURIComponent(cleanTitle)}&language=en-US&page=1`, {
+      headers: { 'Authorization': `Bearer ${apiKey}` }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const result = data.results?.[0];
+    if (!result) return null;
+    const poster = result.poster_path ? `https://image.tmdb.org/t/p/w300${result.poster_path}` : null;
+    posterCache[cacheKey] = poster;
+    return poster;
+  } catch { return null; }
+}
+
 async function loadLibrary() {
   const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) {
-    showError('Please enter your TorBox API key');
-    return;
-  }
+  if (!apiKey) { showError('Please enter your TorBox API key'); return; }
+
+  localStorage.setItem('lelibrary_torbox_key', apiKey);
+  const tmdbKey = document.getElementById('tmdbKey').value.trim();
+  if (tmdbKey) localStorage.setItem('lelibrary_tmdb_key', tmdbKey);
 
   hideError();
   document.getElementById('loginSection').style.display = 'none';
@@ -348,6 +377,9 @@ async function loadLibrary() {
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('content').style.display = 'block';
     showToast(`Loaded ${completed.length} items`);
+
+    // Fetch posters in background if TMDB key available
+    if (tmdbKey) fetchPosters(completed, tmdbKey);
   } catch (err) {
     showError(err.message);
   } finally {
@@ -355,11 +387,42 @@ async function loadLibrary() {
   }
 }
 
+async function fetchPosters(items, tmdbKey) {
+  const uncached = items.filter(i => !posterCache[`poster:${i.name || i.filename}`]);
+  for (const item of uncached.slice(0, 20)) {
+    const name = item.name || item.filename || '';
+    const poster = await tmdbSearch(name, tmdbKey);
+    if (poster) {
+      const img = document.querySelector(`[data-item-id="${item.id}"] .item-poster img`);
+      if (img) img.src = poster;
+    }
+  }
+}
+
+async function deleteItem(item) {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const name = item.name || item.filename || 'Unknown';
+  if (!confirm(`Delete "${name}" from TorBox?`)) return;
+
+  try {
+    const path = item.source === 'torrent' ? `/torrents/${item.id}` : `/usenet/${item.id}`;
+    await torboxDelete(path, apiKey);
+    allItems = allItems.filter(i => i.id !== item.id);
+    renderStats(allItems);
+    renderTabs(allItems);
+    renderGrid(currentTab === 'all' ? allItems : allItems.filter(i =>
+      currentTab === 'movie' ? !isSeries(i.name || i.filename || '') : isSeries(i.name || i.filename || '')
+    ));
+    showToast(`Deleted "${name}"`);
+  } catch (err) {
+    showError(`Delete failed: ${err.message}`);
+  }
+}
+
 function renderStats(items) {
   const movies = items.filter(i => !isSeries(i.name || i.filename || ''));
   const series = items.filter(i => isSeries(i.name || i.filename || ''));
   const totalSize = items.reduce((sum, i) => sum + (i.size || 0), 0);
-
   document.getElementById('statsBar').innerHTML = `
     <div class="stat"><span class="num">${items.length}</span> <span class="label">Total</span></div>
     <div class="stat"><span class="num">${movies.length}</span> <span class="label">Movies</span></div>
@@ -382,11 +445,9 @@ function switchTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-
   const filtered = tab === 'all' ? allItems
     : tab === 'movie' ? allItems.filter(i => !isSeries(i.name || i.filename || ''))
     : allItems.filter(i => isSeries(i.name || i.filename || ''));
-
   renderGrid(filtered);
 }
 
@@ -395,7 +456,6 @@ function renderGrid(items) {
     document.getElementById('grid').innerHTML = '<div class="empty"><div class="icon">📂</div><h3>No items in this category</h3></div>';
     return;
   }
-
   document.getElementById('grid').innerHTML = items.map(item => {
     const name = item.name || item.filename || 'Unknown';
     const state = (item.download_state || '').toLowerCase();
@@ -404,14 +464,20 @@ function renderGrid(items) {
     const size = item.size ? formatBytes(item.size) : '';
     const source = item.source === 'usenet' ? ' Usenet' : '';
     const ext = getExtension(name);
+    const cached = posterCache[`poster:${name}`];
 
     return `
-      <div class="item">
-        <div class="item-poster">${ext ? getExtIcon(ext) : '📄'}</div>
+      <div class="item" data-item-id="${item.id}">
+        <div class="item-poster">
+          ${cached ? `<img src="${cached}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='${ext ? getExtIcon(ext) : '📄'}'" />` : (ext ? getExtIcon(ext) : '📄')}
+        </div>
         <div class="item-info">
           <div class="item-title" title="${name}">${name}</div>
           <div class="item-meta">${size}${source ? ' · ' + source : ''}</div>
-          <span class="item-state ${stateClass}">${stateLabel}</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.25rem">
+            <span class="item-state ${stateClass}">${stateLabel}</span>
+            <button onclick='deleteItem(${JSON.stringify(item).replace(/'/g, "&#39;")})' style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;padding:0" title="Delete">🗑️</button>
+          </div>
         </div>
       </div>
     `;
@@ -439,13 +505,15 @@ function formatBytes(bytes) {
   return gb >= 1 ? `${gb.toFixed(1)} GB` : `${(bytes / 1024 / 1024).toFixed(0)} MB`;
 }
 
+// Auto-load on page open if key is saved
 document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('lelibrary_torbox_key');
-  if (saved) document.getElementById('apiKey').value = saved;
-
-  document.getElementById('apiKey').addEventListener('change', (e) => {
-    localStorage.setItem('lelibrary_torbox_key', e.target.value.trim());
-  });
+  const savedTmdb = localStorage.getItem('lelibrary_tmdb_key');
+  if (saved) {
+    document.getElementById('apiKey').value = saved;
+    if (savedTmdb) document.getElementById('tmdbKey').value = savedTmdb;
+    loadLibrary();
+  }
 });
 </script>
 </body>
