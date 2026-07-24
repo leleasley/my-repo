@@ -223,7 +223,7 @@
       <button class="toggle-btn" type="button" onclick="toggleVis()" aria-label="Show/hide key">👁</button>
     </div>
     <button class="btn-load" id="btnLoad" onclick="loadLibrary()">Load Library</button>
-    <p class="hint">Get your key at <a href="https://torbox.app/settings/api" target="_blank">torbox.app/settings/api</a></p>
+    <p class="hint">Get your key at <a href="https://torbox.app/settings" target="_blank">torbox.app/settings</a></p>
   </div>
 
   <div class="error-box" id="errorBox">
@@ -288,7 +288,7 @@ async function torboxGet(path, apiKey) {
     headers: { 'Authorization': `Bearer ${apiKey}` },
   });
   if (!res.ok) {
-    if (res.status === 401) throw new Error('Invalid API key — check your key at torbox.app/settings/api');
+    if (res.status === 401) throw new Error('Invalid API key — check your key at torbox.app/settings');
     if (res.status === 403) throw new Error('Access denied — your API key may be expired or inactive');
     if (res.status === 429) throw new Error('Rate limited by TorBox — try again in a minute');
     if (res.status >= 500) throw new Error('TorBox server error — try again later');
